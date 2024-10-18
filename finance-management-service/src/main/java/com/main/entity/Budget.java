@@ -2,6 +2,7 @@ package com.main.entity;
 
 import java.time.LocalDate;
 
+import com.main.dto.UserDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,10 +21,11 @@ public class Budget {
 	private String category;
 	private double amount;
 	private double currency;
+	
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private LocalDate createdAt;
 	private LocalDate updatedAt;
-	
-
 }
+
+

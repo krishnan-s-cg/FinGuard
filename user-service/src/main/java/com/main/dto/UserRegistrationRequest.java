@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserDTO {
-	
-	private int userId;
-	private String username;
+public class UserRegistrationRequest 
+{
+	private String userName;
+	private String password;
 	private String email;
 	private String role;
 }

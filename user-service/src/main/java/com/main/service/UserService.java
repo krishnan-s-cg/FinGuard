@@ -1,30 +1,21 @@
 package com.main.service;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
 
-import com.main.dto.UserDTO;
+import com.main.dto.UserProfile;
+import com.main.dto.UserProfileUpdateRequest;
+import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
-import com.main.repository.UserRepository;
 
-@Service
-public class UserService 
+
+public interface UserService 
 {
-	@Autowired
-	private UserRepository userRepo;
+	UserProfile addNewUsers(UserRegistrationRequest addUsers);
+	List<User> getAllUsers();
+	UserProfile updateUserProfile(int userId, UserProfileUpdateRequest user);
+	UserProfile getUserById(int userId);
+	void deleteUser(int userId);
 	
-	public UserDTO getUserDTOById(int userId)
-	{
-		Optional<User> user = userRepo.findById(userId);
-		
-		if(user.isPresent())
-		{
-			User userEntity = user.get();
-			return new UserDTO(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole());
-		}
-		throw new RuntimeException("User not found with id: " + userId);
-		
-	}
 }

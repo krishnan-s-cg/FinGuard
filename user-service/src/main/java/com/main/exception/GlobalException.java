@@ -1,5 +1,5 @@
 package com.main.exception;
 
-public class GlobalException {
+public class GlobalException extends RuntimeException{
 
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.main.dto.UserProfile;
@@ -27,16 +25,13 @@ public class UserServiceImpl implements UserService{
 	{
 		User user = new User();
 		user.setUserName(addUsers.getUserName());
-		user.setUserName(addUsers.getPassword());
+		user.setPassword(addUsers.getPassword());
         user.setEmail(addUsers.getEmail());
         user.setRole(addUsers.getRole());
-        user.setCreatedAt(LocalDate.now());
-        user.setUpdatedAt(LocalDate.now());
         
         User savedUser = userRepo.save(user);
         
         return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole());
-  
 	}
 
 	@Override

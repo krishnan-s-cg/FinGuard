@@ -20,9 +20,7 @@ public class TransactionServiceImpl implements TransactionService {
     private UserClient userClient;
 
     @Override
-    public Transaction createTransaction(Transaction transaction, int userId) {
-        User user = userClient.getUserById(userId);
-        transaction.setUser(user);
+    public Transaction createTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
@@ -33,12 +31,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction updateTransaction(int id, Transaction transaction) {
-        Transaction existingTransaction = transactionRepository.findById(id)
+    public Transaction updateTransaction(int txnId, Transaction transaction) {
+        Transaction existingTransaction = transactionRepository.findById(txnId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        User user = userClient.getUserById(transaction.getUser().getUserId());
-        existingTransaction.setUser(user);
+        existingTransaction.setUserId(transaction.getUserId());
         existingTransaction.setAmount(transaction.getAmount());
         existingTransaction.setType(transaction.getType());
         existingTransaction.setCategory(transaction.getCategory());

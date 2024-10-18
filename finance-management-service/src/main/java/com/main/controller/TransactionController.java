@@ -16,8 +16,8 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping
-    public Transaction createTransaction(@RequestBody Transaction transaction, @RequestParam int userId) {
-        return transactionService.createTransaction(transaction, userId);
+    public Transaction createTransaction(@RequestBody Transaction transaction) {
+        return transactionService.createTransaction(transaction);
     }
 
     @GetMapping("/{id}")

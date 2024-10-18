@@ -16,8 +16,7 @@ public class Transaction {
 	@Id
 	@GeneratedValue
 	private int txnId;
-	@ManyToOne
-	private User user;
+	private int userId;
 	private String type;
 	private String category;
 	private double amount;

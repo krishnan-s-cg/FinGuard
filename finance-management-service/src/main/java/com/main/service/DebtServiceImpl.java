@@ -8,6 +8,7 @@ import com.main.repository.DebtRepository;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,8 @@ public class DebtServiceImpl implements DebtService {
     private UserClient userClient;
 
     public Debt createDebt(DebtRequest debtRequest) {
-    	User user = userClient.getUserById(debtRequest.getUserId());
         Debt debt = new Debt();
-        debt.setUser(user);
+        debt.setUserId(debtRequest.getUserId());
         debt.setLoanType(debtRequest.getLoanType());
         debt.setPrincipalAmount(debtRequest.getPrincipalAmount());
         debt.setInterestRate(debtRequest.getInterestRate());
@@ -36,21 +36,30 @@ public class DebtServiceImpl implements DebtService {
         return debtRepository.save(debt);
     }
 
-    public Debt getDebtById(Integer loanId) {
+    public Debt getDebtById(int loanId) {
         return debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
     }
 
-    public Debt updateDebt(Integer loanId, DebtRequest debtRequest) {
+    public Debt updateDebt(int loanId, DebtRequest debtRequest) {
         Debt debt = debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
         // Update properties from debtRequest to debt
         return debtRepository.save(debt);
     }
 
-    public void deleteDebt(Integer loanId) {
+    public void deleteDebt(int loanId) {
         debtRepository.deleteById(loanId);
     }
 
-    public List<Debt> getDebtsByUserId(Integer userId) {
+    public List<Debt> getDebtsByUserId(int userId) {
         return debtRepository.findByUserId(userId);
+    }
+    
+    public User getUserByDebtId(int debtId) {
+        Optional<Debt> optionalDebt = debtRepository.findById(debtId);
+        if (optionalDebt.isPresent()) {
+            Debt debt = optionalDebt.get();
+            return userClient.getUserById(debt.getUserId());
+        }
+        return null;
     }
 }

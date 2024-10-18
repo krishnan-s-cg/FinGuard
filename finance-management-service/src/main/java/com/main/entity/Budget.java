@@ -16,8 +16,7 @@ public class Budget {
 	@Id
 	@GeneratedValue
 	private int budgetId;
-	@ManyToOne
-	private User user;
+	private int userId;
 	private String category;
 	private double amount;
 	private double currency;

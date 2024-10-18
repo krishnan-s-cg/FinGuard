@@ -16,10 +16,7 @@ public class Debt {
     @Id
     @GeneratedValue
     private int loanId;
-    
-    @ManyToOne
-    private User user;
-    
+    private int userId;    
     private String loanType;
     private double principalAmount;
     private double interestRate;

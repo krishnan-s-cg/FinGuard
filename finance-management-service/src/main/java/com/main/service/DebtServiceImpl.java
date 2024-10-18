@@ -54,12 +54,12 @@ public class DebtServiceImpl implements DebtService {
         return debtRepository.findByUserId(userId);
     }
     
-    public User getUserByDebtId(int debtId) {
-        Optional<Debt> optionalDebt = debtRepository.findById(debtId);
-        if (optionalDebt.isPresent()) {
-            Debt debt = optionalDebt.get();
-            return userClient.getUserById(debt.getUserId());
-        }
-        return null;
-    }
+//    public User getUserByDebtId(int debtId) {
+//        Optional<Debt> optionalDebt = debtRepository.findById(debtId);
+//        if (optionalDebt.isPresent()) {
+//            Debt debt = optionalDebt.get();
+//            return userClient.getUserById(debt.getUserId());
+//        }
+//        return null;
+//    }
 }

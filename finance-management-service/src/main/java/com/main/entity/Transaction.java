@@ -2,12 +2,9 @@ package com.main.entity;
 
 import java.sql.Date;
 
-import com.main.dto.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity

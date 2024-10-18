@@ -52,7 +52,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> getTransactionsByUserId(int userId) {
-        User user = userClient.getUserById(userId);
-        return transactionRepository.findByUser(user);
+//        User user = userClient.getUserById(userId);
+//        return transactionRepository.findByUser(user);		
+    	return null;
     }
 }

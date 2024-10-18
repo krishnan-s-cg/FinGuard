@@ -1,8 +1,12 @@
 package com.main.dto;
 
+import java.math.BigDecimal;
+
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,4 +28,8 @@ public class UserProfileUpdateRequest {
 	@NotNull(message = "Role cannot be empty")
 	@Pattern(regexp = "user|admin")
 	private String role; // role can be updated by admin
+	
+	@PositiveOrZero
+	@Digits(integer = 6, fraction = 2)
+	private BigDecimal wallet = BigDecimal.ZERO;
 }

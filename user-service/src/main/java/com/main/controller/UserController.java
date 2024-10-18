@@ -24,14 +24,14 @@ import com.main.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/finguard")
 public class UserController {
 	
 	@Autowired
 	private UserService userservice;
 	
 	// adding new users
-	@PostMapping
+	@PostMapping("/user")
 	public ResponseEntity<UserProfile> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
 		UserProfile newUserprofile = userservice.addNewUsers(request);
@@ -39,7 +39,7 @@ public class UserController {
 	}
 	
 	// Getting All Users
-	@GetMapping
+	@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() 
 	{
         List<User> users = userservice.getAllUsers();
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // Get a user by ID
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable int userId) 
     {
     	UserProfile userById = userservice.getUserById(userId);
@@ -55,7 +55,7 @@ public class UserController {
     }
 
     // Update a user by ID
-    @PutMapping("/{userId}")
+    @PutMapping("/user/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {
     	UserProfile updatedUser = userservice.updateUserProfile(userId, request);
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     // Delete a user by ID
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/user/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable int userId) 
     {
     	userservice.deleteUser(userId);

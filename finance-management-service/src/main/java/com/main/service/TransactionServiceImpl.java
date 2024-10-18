@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.main.dto.User;
 import com.main.entity.Transaction;
+import com.main.exception.TransactionNotFoundException;
+import com.main.exception.UserNotFoundException;
 import com.main.proxy.UserClient;
 import com.main.repository.TransactionRepository;
 
@@ -35,7 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Transaction with ID {} not found", id);
-                    return new RuntimeException("Transaction not found");
+                    return new TransactionNotFoundException("Transaction not found");
                 });
     }
 
@@ -77,6 +79,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactions = transactionRepository.findByUserId(userId);
         if (transactions == null || transactions.isEmpty()) {
             logger.warn("No transactions found for user ID: {}", userId);
+            throw new TransactionNotFoundException("Transaction not found for the userId: "+userId);
         }
         return transactions;
     }
@@ -89,19 +92,19 @@ public class TransactionServiceImpl implements TransactionService {
 
         if (receiver == null) {
             logger.error("Receiver user with ID {} not found", receiverUserId);
-            throw new RuntimeException("Receiver user not found");
+            throw new UserNotFoundException("Receiver user not found");
         }
         if (sender == null) {
             logger.error("Sender user with ID {} not found", senderUserId);
-            throw new RuntimeException("Sender user not found");
+            throw new UserNotFoundException("Sender user not found");
         }
         if (sender.getBalance() < amount) {
             logger.error("Insufficient balance for user ID {}", senderUserId);
-            throw new RuntimeException("Insufficient Balance");
+            throw new UserNotFoundException("Insufficient Balance");
         }
 
         receiver.setBalance(receiver.getBalance() + amount);
-        sender.setBalance(sender.getBalance() - amount);
+        sender.setBalance(sender.getBalance() - amount); 
 
         userClient.updateUser(receiverUserId, receiver);
         userClient.updateUser(senderUserId, sender);

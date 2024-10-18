@@ -17,9 +17,9 @@ public class GoalServiceImpl implements GoalService{
 	    private GoalRepository goalRepo;
 
 	    @Override
-	    public Goal createGoal(GoalDto goalDto) {
+	    public Goal createGoalService(GoalDto goalDto) {
 	        Goal goal = new Goal();
-	        goal.setUser(goalDto.getUserId());
+	        goal.setUserId(goalDto.getUserId());
 	        goal.setTargetAmount(goalDto.getTargetAmount());
 	        goal.setCurrentAmount(goalDto.getCurrentAmount());
 	        goal.setGoalName(goalDto.getDescription());
@@ -28,14 +28,14 @@ public class GoalServiceImpl implements GoalService{
 	    }
 
 	    @Override
-	    public Goal getGoalById(int goalId) {
+	    public Goal getGoalByIdService(int goalId) {
 	        return goalRepo.findById(goalId)
 	                .orElseThrow(() -> new RuntimeException("Goal not found with ID: " + goalId));
 	    }
 
 	    @Override
-	    public Goal updateGoal(int goalId, GoalDto goalDto) {
-	        Goal goal = getGoalById(goalId);  // Fetch the existing goal
+	    public Goal updateGoalService(int goalId, GoalDto goalDto) {
+	        Goal goal = getGoalByIdService(goalId);  // Fetch the existing goal
 	        goal.setTargetAmount(goalDto.getTargetAmount());
 	        goal.setCurrentAmount(goalDto.getCurrentAmount());
 	        goal.setGoalName(goalDto.getDescription());
@@ -44,19 +44,19 @@ public class GoalServiceImpl implements GoalService{
 	    }
 
 	    @Override
-	    public void deleteGoal(int goalId) {
-	        Goal goal = getGoalById(goalId);
+	    public void deleteGoalService(int goalId) {
+	        Goal goal = getGoalByIdService(goalId);
 	        goalRepo.delete(goal);
 	    }
 
 	    @Override
-	    public List<Goal> getUserGoals(int userId) {
+	    public List<Goal> getUserGoalsService(int userId) {
 	        return goalRepo.findByUserId(userId);
 	    }
 
 	    @Override
-	    public double trackGoalProgress(int goalId) {
-	        Goal goal = getGoalById(goalId);
+	    public double trackGoalProgressService(int goalId) {
+	        Goal goal = getGoalByIdService(goalId);
 	        return (goal.getCurrentAmount() / goal.getTargetAmount()) * 100;
 	    }
 

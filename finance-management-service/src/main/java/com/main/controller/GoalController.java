@@ -28,42 +28,42 @@ public class GoalController {
 	    // Create a new goal
 	    @PostMapping
 	    public ResponseEntity<Goal> createGoal(@RequestBody GoalDto goalDto) {
-	        Goal createdGoal = goalService.createGoal(goalDto);
+	        Goal createdGoal = goalService.createGoalService(goalDto);
 	        return new ResponseEntity<>(createdGoal, HttpStatus.CREATED);
 	    }
 
 	    // Get a goal by ID
 	    @GetMapping("/{goalId}")
 	    public ResponseEntity<Goal> getGoalById(@PathVariable int goalId) {
-	        Goal goal = goalService.getGoalById(goalId);
+	        Goal goal = goalService.getGoalByIdService(goalId);
 	        return new ResponseEntity<>(goal, HttpStatus.OK);
 	    }
 
 	    // Update a goal
 	    @PutMapping("/{goalId}")
 	    public ResponseEntity<Goal> updateGoal(@PathVariable int goalId, @RequestBody GoalDto goalDto) {
-	        Goal updatedGoal = goalService.updateGoal(goalId, goalDto);
+	        Goal updatedGoal = goalService.updateGoalService(goalId, goalDto);
 	        return new ResponseEntity<>(updatedGoal, HttpStatus.OK);
 	    }
 
 	    // Delete a goal
 	    @DeleteMapping("/{goalId}")
 	    public ResponseEntity<Void> deleteGoal(@PathVariable int goalId) {
-	        goalService.deleteGoal(goalId);
+	        goalService.deleteGoalService(goalId);
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    }
 
 	    // Get all goals for a user
 	    @GetMapping("/user/{userId}")
 	    public ResponseEntity<List<Goal>> getUserGoals(@PathVariable int userId) {
-	        List<Goal> goals = goalService.getUserGoals(userId);
+	        List<Goal> goals = goalService.getUserGoalsService(userId);
 	        return new ResponseEntity<>(goals, HttpStatus.OK);
 	    }
 
 	    // Track progress of a specific goal
 	    @GetMapping("/{goalId}/progress")
 	    public ResponseEntity<Double> trackGoalProgress(@PathVariable int goalId) {
-	        double progress = goalService.trackGoalProgress(goalId);
+	        double progress = goalService.trackGoalProgressService(goalId);
 	        return new ResponseEntity<>(progress, HttpStatus.OK);
            }
 

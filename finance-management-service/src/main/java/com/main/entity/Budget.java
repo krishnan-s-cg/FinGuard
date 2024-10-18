@@ -2,6 +2,7 @@ package com.main.entity;
 
 import java.time.LocalDate;
 
+import com.main.dto.UserDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,15 +17,17 @@ public class Budget {
 	@Id
 	@GeneratedValue
 	private int budgetId;
-	@ManyToOne
-	private User user;
+
+	private int userId;
+	
 	private String category;
 	private double amount;
 	private double currency;
+	
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private LocalDate createdAt;
 	private LocalDate updatedAt;
-	
-
 }
+
+

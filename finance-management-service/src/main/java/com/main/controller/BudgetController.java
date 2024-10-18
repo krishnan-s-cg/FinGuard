@@ -26,41 +26,41 @@ public class BudgetController {
 	
 	
 
-	    @Autowired
+	    @Autowired   // Automatically injects the BudgetService bean into this class.
 	    private BudgetService budgetService;
 
 	    // Create a new budget
 	    @PostMapping
 	    public ResponseEntity<Budget> createBudget(@RequestBody BudgetDto budgetDto) {
-	        Budget createdBudget = budgetService.createBudget(budgetDto);
+	        Budget createdBudget = budgetService.createBudgetService(budgetDto);
 	        return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
 	    }
 
 	    // Get a budget by ID
 	    @GetMapping("/{budgetId}")
 	    public ResponseEntity<Budget> getBudgetById(@PathVariable int budgetId) {
-	        Budget budget = budgetService.getBudgetById(budgetId);
+	        Budget budget = budgetService.getBudgetByIdService(budgetId);
 	        return new ResponseEntity<>(budget, HttpStatus.OK);
 	    }
 
 	    // Update a budget
 	    @PutMapping("/{budgetId}")
 	    public ResponseEntity<Budget> updateBudget(@PathVariable int budgetId, @RequestBody BudgetDto budgetDto) {
-	        Budget updatedBudget = budgetService.updateBudget(budgetId, budgetDto);
+	        Budget updatedBudget = budgetService.updateBudgetService(budgetId, budgetDto);
 	        return new ResponseEntity<>(updatedBudget, HttpStatus.OK);
 	    }
 
 	    // Delete a budget
 	    @DeleteMapping("/{budgetId}")
 	    public ResponseEntity<Void> deleteBudget(@PathVariable int budgetId) {
-	        budgetService.deleteBudget(budgetId);
+	        budgetService.deleteBudgetService(budgetId);
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    }
 
 	    // Get all budgets for a user
 	    @GetMapping("/user/{userId}")
 	    public ResponseEntity<List<Budget>> getUserBudgets(@PathVariable int  userId) {
-	        List<Budget> budgets = budgetService.getUserBudgets(userId);
+	        List<Budget> budgets = budgetService.getUserBudgetsService(userId);
 	        return new ResponseEntity<>(budgets, HttpStatus.OK);
 	    }
 

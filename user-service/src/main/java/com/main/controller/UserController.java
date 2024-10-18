@@ -22,6 +22,8 @@ import com.main.entity.User;
 import com.main.repository.UserRepository;
 import com.main.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -31,7 +33,7 @@ public class UserController {
 	
 	// adding new users
 	@PostMapping
-	public ResponseEntity<UserProfile> registerUsers(@RequestBody UserRegistrationRequest request)
+	public ResponseEntity<UserProfile> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
 		UserProfile newUserprofile = userservice.addNewUsers(request);
 		return new ResponseEntity<>(newUserprofile, HttpStatus.CREATED);

@@ -1,5 +1,13 @@
 package com.main.repository;
 
-public class BudgetRepository {
+import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.main.entity.Budget;
+
+public interface BudgetRepository extends JpaRepository<Budget,Integer>{
+
+	 List<Budget> findByUserId(int userId);
+	
 }

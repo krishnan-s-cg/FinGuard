@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.main.dto.BudgetDto;
-import com.main.dto.UserDto;
 import com.main.entity.Budget;
 import com.main.proxy.UserClient;
 import com.main.repository.BudgetRepository;
@@ -19,8 +18,6 @@ public class BudgetServiceImpl implements BudgetService{
 
 	@Autowired
 	private UserClient userClient;
-//	@Autowired
-//	private BudgetService budgetService;
 
     @Override
     public Budget createBudgetService(BudgetDto budgetDto) {

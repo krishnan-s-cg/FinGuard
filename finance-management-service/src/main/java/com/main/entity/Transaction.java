@@ -1,8 +1,8 @@
 package com.main.entity;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
-import com.main.dto.UserDto;
+import com.main.dto.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,20 +12,18 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Budget {
-	
+public class Transaction {
 	@Id
 	@GeneratedValue
-	private int budgetId;
+	private int txnId;
 	private int userId;
+	private String type;
 	private String category;
 	private double amount;
 	private double currency;
+	private Date txnDate;
+	private String description;
+	private Date createdAt;
+	private Date updatedAt;
 	
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private LocalDate createdAt;
-	private LocalDate updatedAt;
 }
-
-

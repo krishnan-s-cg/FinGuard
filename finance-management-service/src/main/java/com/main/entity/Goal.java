@@ -13,7 +13,6 @@ import lombok.Data;
 @Entity
 @Data
 public class Goal {
-
 	@Id
 	@GeneratedValue
 	private int goalId;
@@ -24,8 +23,4 @@ public class Goal {
 	private LocalDate targetDate;
 	private LocalDate createdAt;
 	private LocalDate updatedAt;
-	
-	
-	
-
 }

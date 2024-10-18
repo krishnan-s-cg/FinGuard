@@ -2,6 +2,9 @@ package com.main.entity;
 
 import java.sql.Date;
 
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,9 +21,12 @@ public class Transaction {
 	private String category;
 	private double amount;
 	private double currency;
+	private double balance;
 	private Date txnDate;
 	private String description;
+	@CreatedDate
 	private Date createdAt;
+	@UpdateTimestamp
 	private Date updatedAt;
 	
 }

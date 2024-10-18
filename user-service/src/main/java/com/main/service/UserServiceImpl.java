@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.client.NotificationClient;
+import com.main.dto.EmailRequest;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
@@ -14,11 +16,15 @@ import com.main.entity.User;
 import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 
+
 @Service
 public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 
 	@Override
 	public UserProfile addNewUsers(UserRegistrationRequest addUsers) 
@@ -30,6 +36,10 @@ public class UserServiceImpl implements UserService{
         user.setRole(addUsers.getRole());
         
         User savedUser = userRepo.save(user);
+        
+        EmailRequest emailrequest = new EmailRequest(savedUser.getEmail(), "Account Created", "Account created, thank you for choosing us.");
+        
+        notificationClient.sendAccountCreationEmail(emailrequest);
         
         return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole());
 	}

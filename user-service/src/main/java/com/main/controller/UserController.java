@@ -46,7 +46,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK); 
     }
 
-    // Get a user by ID
+    // Get a user by ID 
     @GetMapping("/user/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable int userId) 
     {
@@ -54,7 +54,7 @@ public class UserController {
         return new ResponseEntity<>(userById, HttpStatus.OK);
     }
 
-    // Update a user by ID
+    // Update a user by ID 
     @PutMapping("/user/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {

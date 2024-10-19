@@ -1,5 +1,7 @@
 package com.main.service;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.dto.TransactionRequest;
 import com.main.dto.User;
 import com.main.entity.Transaction;
 import com.main.exception.TransactionNotFoundException;
@@ -89,7 +92,6 @@ public class TransactionServiceImpl implements TransactionService {
         logger.info("Making transaction from user ID: {} to user ID: {} with amount: {}", senderUserId, receiverUserId, amount);
         User receiver = userClient.getUserById(receiverUserId);
         User sender = userClient.getUserById(senderUserId);
-
         if (receiver == null) {
             logger.error("Receiver user with ID {} not found", receiverUserId);
             throw new UserNotFoundException("Receiver user not found");
@@ -98,17 +100,33 @@ public class TransactionServiceImpl implements TransactionService {
             logger.error("Sender user with ID {} not found", senderUserId);
             throw new UserNotFoundException("Sender user not found");
         }
-        if (sender.getBalance() < amount) {
+
+        BigDecimal amountBigDecimal = BigDecimal.valueOf(amount);
+
+        if (sender.getWallet().compareTo(amountBigDecimal) < 0) {
             logger.error("Insufficient balance for user ID {}", senderUserId);
             throw new UserNotFoundException("Insufficient Balance");
         }
 
-        receiver.setBalance(receiver.getBalance() + amount);
-        sender.setBalance(sender.getBalance() - amount); 
-
+        receiver.setWallet(receiver.getWallet().add(amountBigDecimal));
+        sender.setWallet(sender.getWallet().subtract(amountBigDecimal));
+ 
         userClient.updateUser(receiverUserId, receiver);
+        Transaction receiverTxn = new Transaction();
+        receiverTxn.setUserId(receiverUserId);
+        receiverTxn.setAmount(amountBigDecimal.doubleValue());
+        receiverTxn.setWallet(receiver.getWallet());
+        transactionRepository.save(receiverTxn);
+        
         userClient.updateUser(senderUserId, sender);
+        Transaction senderTxn = new Transaction();
+        senderTxn.setUserId(senderUserId);
+        senderTxn.setAmount(-amountBigDecimal.doubleValue());
+        senderTxn.setWallet(sender.getWallet());
+        transactionRepository.save(senderTxn);
 
         logger.info("Transaction completed successfully from user ID: {} to user ID: {} with amount: {}", senderUserId, receiverUserId, amount);
     }
+
+
 }

@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
  
-@FeignClient(name = "user-service")
+@FeignClient("user-service")
 public interface UserClient {
-    @GetMapping("/users/{userId}")
+    @GetMapping("/finguard/user/{userId}")
     User getUserById(@PathVariable int userId);
     
-    @PutMapping("/users/{userId}")
+    @PutMapping("/finguard/user/{userId}")
     User updateUser(@PathVariable int userId, @RequestBody User user);
 }

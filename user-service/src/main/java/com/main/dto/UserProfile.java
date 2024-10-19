@@ -1,5 +1,7 @@
 package com.main.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,4 +13,5 @@ public class UserProfile
 	private String userName;
 	private String email;
 	private String role;
+	private BigDecimal wallet;
 }

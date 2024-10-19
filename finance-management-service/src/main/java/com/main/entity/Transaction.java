@@ -1,13 +1,16 @@
 package com.main.entity;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
@@ -17,16 +20,12 @@ public class Transaction {
 	@GeneratedValue
 	private int txnId;
 	private int userId;
-	private String type;
-	private String category;
 	private double amount;
-	private double currency;
-	private double balance;
+	private BigDecimal wallet;
+	@CreationTimestamp
 	private Date txnDate;
-	private String description;
-	@CreatedDate
+	@CreationTimestamp
 	private Date createdAt;
 	@UpdateTimestamp
 	private Date updatedAt;
-	
 }

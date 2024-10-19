@@ -2,6 +2,7 @@ package com.main.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -25,22 +26,22 @@ public class Budget {
 	@NotNull(message="user ID cannot be null")
 	private int userId;
 	@NotNull(message="Catagory cannot be null")
-	@Pattern(regexp="^[A-Za-z]$",message="Category must be Alphabetic")
 	private String category;
 	@NotNull(message="Amount cannot be null")
-	@Positive(message ="Amount must be a posistive number")
+//	@Positive(message ="Amount must be a posistive number")
 	private double amount;
-	@NotNull(message="Amount cannot be null")
-	@Positive(message ="Amount must be a posistive number")
-	private double Spentamount;
+//	@NotNull(message="Amount cannot be null")
+//	@Positive(message ="Amount must be a posistive number")
+	private double spentAmount;
 	@NotNull(message="Start date cannot be null")
 	private LocalDate startDate;
 	@NotNull(message=" End date cannot be null")
 	private LocalDate endDate;
-	@CreatedDate
+	@CreationTimestamp
 	private LocalDate createdAt;
 	@UpdateTimestamp
 	private LocalDate updatedAt;
-}
+	}
+
 
 

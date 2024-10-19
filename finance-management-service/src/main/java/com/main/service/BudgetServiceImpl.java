@@ -14,7 +14,10 @@ import com.main.exception.RemainingAmountException;
 import com.main.proxy.UserClient;
 import com.main.repository.BudgetRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class BudgetServiceImpl implements BudgetService {
 
     private static final Logger logger = LoggerFactory.getLogger(BudgetServiceImpl.class);
@@ -98,11 +101,11 @@ public class BudgetServiceImpl implements BudgetService {
         Budget budget = getBudgetByIdService(budgetId);
         
         // Check if spent amount exceeds total budget
-        if (budget.getSpentamount() > budget.getAmount()) {
+        if (budget.getSpentAmount() > budget.getAmount()) {
             logger.error("Spent amount exceeds the budget for budget ID: {}", budgetId);
             throw new RemainingAmountException("Spent amount exceeds the budget.");
         }
-        double remainingAmount = budget.getAmount() - budget.getSpentamount();
+        double remainingAmount = budget.getAmount() - budget.getSpentAmount();
         logger.info("Remaining amount for budget ID {}: {}", budgetId, remainingAmount);
         return remainingAmount;
     }

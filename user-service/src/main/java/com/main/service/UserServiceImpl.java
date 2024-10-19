@@ -49,7 +49,12 @@ public class UserServiceImpl implements UserService{
         
         logger.debug("{} saved successfully with id: {}", savedUser.getRole(),savedUser.getUserId());
         
-        AccountCreationEmailRequest emailrequest = new AccountCreationEmailRequest(savedUser.getEmail(), "Account Created", "Account created, thank you for choosing us.");
+        AccountCreationEmailRequest emailrequest = new AccountCreationEmailRequest(savedUser.getEmail()
+        		, "Welcome to FinGuard – Your Financial Journey Starts Here!"
+        		, "Dear " + savedUser.getUserName() + ",\n"+ "We’re excited to welcome you to FinGuard! Thank you for choosing us to help manage your financial goals and journey. Your account has been successfully created, and you’re now part of a community dedicated to making finance management smarter and easier.\r\n"
+        			+ "\r\n" + "Feel free to explore our features, from budget tracking to personalized financial insights. We’re here to support you every step of the way.\r\n"
+        			+ "\r\n" + "If you have any questions or need assistance, our support team is always ready to help.\r\n"
+        			+ "\r\n" + "Best regards,\r\n" + "The FinGuard Team");
         
         notificationClient.sendAccountCreationEmail(emailrequest);
         
@@ -146,9 +151,17 @@ public class UserServiceImpl implements UserService{
 		// Create the email request here
 	    WalletUpdateEmailRequest emailRequest = new WalletUpdateEmailRequest(
 	        updatedUser.getEmail(),
-	        "Money added to wallet",
-	        "Your Wallet has been updated with an amount of: " + amount + ". New Balance: " + newWalletAmount
-	    );
+	        "Wallet Successfully Updated!",
+	        "Dear " + updatedUser.getUserName() + ",\r\n" +
+	        		"\r\n" +
+	        		"We're excited to inform you that your wallet has been successfully credited with " + amount + ". Your new balance is now " + newWalletAmount + ".\r\n" +
+	        		"\r\n" +
+	        		"Thank you for trusting FinGuard to manage your finances. We’re here to support you every step of the way!\r\n" +
+	        		"\r\n" +
+	        		"If you have any questions or need assistance, feel free to contact our support team.\r\n" +
+	        		"\r\n" +
+	        		"Best regards,\r\n" +
+	        		"The FinGuard Team");
 	    
 	    // Logging the email details before sending
 	    logger.info("Sending wallet update email to: {}, subject: {}, body: {}", 

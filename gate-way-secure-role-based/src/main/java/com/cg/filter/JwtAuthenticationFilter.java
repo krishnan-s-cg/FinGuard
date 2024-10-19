@@ -39,8 +39,8 @@ public class JwtAuthenticationFilter implements WebFilter {
                 if (!JwtUtil.isTokenExpired(claims)) {
                     String username = JwtUtil.getUsername(claims);
                     String r = JwtUtil.getRoles(claims);
-System.out.println(r);
-String roles[]= {r};
+                    System.out.println(r);
+	String roles[]= {r};
                     var authorities = Arrays.stream(roles)
                             .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                             .collect(Collectors.toList());

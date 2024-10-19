@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private NotificationClient notificationClient;
-
+	
 	@Override
 	public UserProfile addNewUsers(UserRegistrationRequest addUsers) 
 	{
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService{
         
         notificationClient.sendAccountCreationEmail(emailrequest);
         
-        return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole());
+        return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getWallet());
 	}
 
 	@Override
@@ -62,10 +62,11 @@ public class UserServiceImpl implements UserService{
 			existingUser.setUserName(u.getUserName());
 			existingUser.setEmail(u.getEmail());
 			existingUser.setRole(u.getRole());
+			existingUser.setWallet(u.getWallet());
 			existingUser.setUpdatedAt(LocalDate.now()); // updating the date
 			// save the updates and return it
 			User updatedUser = userRepo.save(existingUser);
-			return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole());
+			return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());
 		}
 		throw new UserNotFoundException("User not found with id: " + userId);
 	}
@@ -74,18 +75,18 @@ public class UserServiceImpl implements UserService{
 	public UserProfile getUserById(int userId) {
 		
 		Optional<User> user = userRepo.findById(userId);
-		
 		if(user.isPresent())
 		{
 			User userEntity = user.get();
-			return new UserProfile(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole());
+			System.out.println(userEntity.getWallet());
+			return new UserProfile(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole(), userEntity.getWallet());
 		}
 		throw new UserNotFoundException("User not found with id: " + userId);
 	}
 
 	@Override
 	public boolean deleteUser(int userId) {
-		
+		 
 		Optional<User> user = userRepo.findById(userId);
 		
 		if (user.isPresent()) {

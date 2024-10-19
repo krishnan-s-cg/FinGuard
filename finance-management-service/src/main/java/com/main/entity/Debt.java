@@ -2,6 +2,9 @@ package com.main.entity;
 
 import java.sql.Date;
 
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
 import com.main.dto.User;
 
 import jakarta.persistence.Entity;
@@ -23,6 +26,8 @@ public class Debt {
     private double emiAmount;
     private Date startDate;
     private Date endDate;     
-    private Date createdAt;
-    private Date updatedAt;
+	@CreatedDate
+	private Date createdAt;
+	@UpdateTimestamp
+	private Date updatedAt;
 }

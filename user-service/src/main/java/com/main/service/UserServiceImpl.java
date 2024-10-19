@@ -21,7 +21,7 @@ import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 
 
-@Service
+@Service 
 public class UserServiceImpl implements UserService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);

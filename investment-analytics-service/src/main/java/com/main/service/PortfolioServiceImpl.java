@@ -1,5 +1,7 @@
 package com.main.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.setQuantity(request.getQuantity());
         portfolio.setPurchasePrice(request.getPurchasePrice());
         portfolio.setCurrentPrice(request.getCurrentPrice());
-        
+        portfolio.setPurchaseDate(request.getPurchaseDate());
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         logger.info("Portfolio added successfully with ID: {}", savedPortfolio.getUserId());
         return savedPortfolio;
@@ -56,8 +58,8 @@ public class PortfolioServiceImpl implements PortfolioService {
             logger.error("Portfolio Asset Type cannot be null for portfolio ID: {}", portfolioId);
             throw new CustomException("Portfolio Asset Type cannot be null.");
         }
-
-        portfolio.setAssetType(portfolioRequest.getAssetType());
+        portfolio.setPurchasePrice(portfolioRequest.getPurchasePrice());
+        
         Portfolio updatedPortfolio = portfolioRepository.save(portfolio);
         logger.info("Portfolio updated successfully with ID: {}", updatedPortfolio.getUserId());
         return updatedPortfolio;
@@ -75,4 +77,17 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolioRepository.deleteById(portfolioId);
         logger.info("Portfolio deleted successfully with ID: {}", portfolioId);
     }
+    @Override
+    public List<Portfolio> viewAllPortfolios() {
+        logger.info("Retrieving all portfolios");
+        List<Portfolio> portfolios = portfolioRepository.findAll();
+        if (portfolios.isEmpty()) {
+            logger.warn("No portfolios found");
+        } else {
+            logger.info("Retrieved {} portfolios", portfolios.size());
+        }
+        return portfolios;
+    }
+
+	
 }

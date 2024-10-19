@@ -12,10 +12,9 @@ public interface DebtService {
 
     public Debt getDebtById(int loanId); 
 
-    public Debt updateDebt(int loanId, DebtRequest debtRequest);
+    public Debt updateDebt(int loanId, double amount);
 
     public void deleteDebt(int loanId);
 
     public List<Debt> getDebtsByUserId(int userId);
-
 }

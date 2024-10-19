@@ -6,8 +6,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-@SpringBootApplication
-@EnableFeignClients
+@SpringBootApplication 
+@EnableFeignClients 
 public class UserServiceApplication {
 
 	public static void main(String[] args) {

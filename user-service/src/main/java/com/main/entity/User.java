@@ -33,12 +33,14 @@ public class User
 	
 	private String role;
 	
+
 	@PositiveOrZero
 	@Digits(integer = 6, fraction = 2)
 	private BigDecimal wallet = BigDecimal.ZERO;
 	
 	@CreationTimestamp
 	@PastOrPresent
+
 	private LocalDate createdAt;
 	
 	@UpdateTimestamp

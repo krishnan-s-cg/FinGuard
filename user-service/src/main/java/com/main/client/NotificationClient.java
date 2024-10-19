@@ -5,12 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.main.dto.EmailRequest;
+import com.main.dto.AccountCreationEmailRequest;
 
 @FeignClient(name = "notification-service")
 public interface NotificationClient {
 	
 	@PostMapping("/notification/sendEmail")
-	ResponseEntity<Void> sendAccountCreationEmail(@RequestBody EmailRequest emailRequest);
+	ResponseEntity<Void> sendAccountCreationEmail(@RequestBody AccountCreationEmailRequest accountCreationEmailRequest);
 
 }

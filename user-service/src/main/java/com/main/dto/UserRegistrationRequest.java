@@ -16,7 +16,7 @@ public class UserRegistrationRequest
 	private String userName;
 	
 	@NotNull(message = "Password should not be empty")
-	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,20}$")
+	@Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^,.])(?=\\S+$).{8,20}$")
 	private String password;
 	
 	@NotNull(message = "Email Id should not be empty")

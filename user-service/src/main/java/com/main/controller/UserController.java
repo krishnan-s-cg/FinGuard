@@ -1,5 +1,6 @@
 package com.main.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.dto.UpdateWallet;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
@@ -59,6 +61,14 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {
     	UserProfile updatedUser = userservice.updateUserProfile(userId, request);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
+    }
+    
+    // Update Users Wallet after he Logins
+    @PutMapping("/user/wallet/{userId}")
+    public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) 
+    {
+    	UserProfile updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
     }
 

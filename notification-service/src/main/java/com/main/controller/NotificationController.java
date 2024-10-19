@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.dto.EmailRequest;
+import com.main.dto.WalletUpdateEmailRequest;
 //import com.main.dto.TransferObj;
 import com.main.service.NotificationService;
 
@@ -27,6 +28,13 @@ public class NotificationController
         return new ResponseEntity<>(HttpStatus.OK); // Return success status
     }
 	
+    @PostMapping("/sendWalletUpdateEmail")
+    public ResponseEntity<Void> sendWalletUpdateEmail(@RequestBody WalletUpdateEmailRequest walletUpdateRequest)
+    {
+    	notificationservice.sendWalletUpdateEmail( walletUpdateRequest);
+    	return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+    
 	
 	/*
 	 * @PostMapping("/send-msg/send") public String transcationMsg(@RequestBody

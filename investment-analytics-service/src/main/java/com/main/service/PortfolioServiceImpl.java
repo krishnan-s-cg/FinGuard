@@ -1,5 +1,7 @@
 package com.main.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,4 +77,17 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolioRepository.deleteById(portfolioId);
         logger.info("Portfolio deleted successfully with ID: {}", portfolioId);
     }
+    @Override
+    public List<Portfolio> viewAllPortfolios() {
+        logger.info("Retrieving all portfolios");
+        List<Portfolio> portfolios = portfolioRepository.findAll();
+        if (portfolios.isEmpty()) {
+            logger.warn("No portfolios found");
+        } else {
+            logger.info("Retrieved {} portfolios", portfolios.size());
+        }
+        return portfolios;
+    }
+
+	
 }

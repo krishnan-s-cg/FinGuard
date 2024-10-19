@@ -1,7 +1,8 @@
 package com.main.service;
 
-import java.time.LocalDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,14 +10,18 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.main.dto.EmailRequest;
-import com.main.dto.TransferObj;
 
-import lombok.val;
+import com.main.dto.WalletUpdateEmailRequest;
+
+
+
 
 
 @Service
 public class NotificationService 
 {
+	private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
+    
 	@Autowired
 	private JavaMailSender javaMailSender;
 	
@@ -33,26 +38,26 @@ public class NotificationService
 		message.setText(emailRequest.getBody());
 		
 		javaMailSender.send(message);
+		 logger.info("Account created mail sent to {}" ,emailRequest.getToEmail());
+			
 	}
 	
-	/*
-	 * public void transcationEmail(TransferObj obj) {
-	 * 
-	 * String
-	 * senderMsg="Amount of "+obj.getAmount()+" successfully added to wallet " +
-	 * " at "+LocalDateTime.now();
-	 * 
-	 * if(obj.getStatus().equals("failed")) { senderMsg+=" is failed";
-	 * 
-	 * } else { senderMsg +=" is success";
-	 * 
-	 * }
-	 * 
-	 * SimpleMailMessage senderMail = new SimpleMailMessage();
-	 * senderMail.setFrom(fromEmailId); senderMail.setTo(obj.getSenderMail());
-	 * senderMail.setText(senderMsg); senderMail.setSubject("Transcation");
-	 * javaMailSender.send(senderMail);
-	 * 
-	 * }
-	 */
+	public void sendWalletUpdateEmail(WalletUpdateEmailRequest walletupdaterequest)
+	{
+		logger.info("Sending wallet update email to: {}, subject: {}, body: {}", 
+		        walletupdaterequest.getToEmail(), 
+		        walletupdaterequest.getSubject(), 
+		        walletupdaterequest.getMessage());
+		
+		 SimpleMailMessage message = new SimpleMailMessage();
+	        
+	        message.setFrom(fromEmailId);
+	        message.setTo(walletupdaterequest.getToEmail());
+	        message.setSubject(walletupdaterequest.getSubject());
+	        message.setText(walletupdaterequest.getMessage());
+	        
+	        javaMailSender.send(message);
+	        logger.info("Account created mail sent to {}", walletupdaterequest.getToEmail());
+	}
+	
 }

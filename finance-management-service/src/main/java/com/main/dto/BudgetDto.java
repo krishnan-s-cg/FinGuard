@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class BudgetDto {
-
 	    private int userId;
 	    private double amount;
 	    private String category;

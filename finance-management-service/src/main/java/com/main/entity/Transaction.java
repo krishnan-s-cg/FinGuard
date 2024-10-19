@@ -23,6 +23,7 @@ public class Transaction {
 	private double currency;
 	private Date txnDate;
 	private String description;
+	
 	private Date createdAt;
 	private Date updatedAt;
 	

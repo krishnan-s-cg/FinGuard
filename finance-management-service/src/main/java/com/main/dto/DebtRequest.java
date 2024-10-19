@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class DebtRequest {
+	private int loanId;
 	private int userId;
-    private String loanType;
     private Double principalAmount;
     private Double interestRate;
     private Double emiAmount;

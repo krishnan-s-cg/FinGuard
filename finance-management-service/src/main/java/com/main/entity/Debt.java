@@ -5,12 +5,9 @@ import java.sql.Date;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
-import com.main.dto.User;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
@@ -19,11 +16,11 @@ public class Debt {
     @Id
     @GeneratedValue
     private int loanId;
-    private int userId;    
-    private String loanType;
+    private int userId;
     private double principalAmount;
     private double interestRate;
     private double emiAmount;
+    private double amountPaid;
     private Date startDate;
     private Date endDate;     
 	@CreatedDate

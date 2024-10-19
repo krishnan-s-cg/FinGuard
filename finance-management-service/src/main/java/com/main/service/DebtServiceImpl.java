@@ -25,7 +25,6 @@ public class DebtServiceImpl implements DebtService {
     public Debt createDebt(DebtRequest debtRequest) {
         Debt debt = new Debt();
         debt.setUserId(debtRequest.getUserId());
-        debt.setLoanType(debtRequest.getLoanType());
         debt.setPrincipalAmount(debtRequest.getPrincipalAmount());
         debt.setInterestRate(debtRequest.getInterestRate());
         debt.setEmiAmount(debtRequest.getEmiAmount());
@@ -40,9 +39,10 @@ public class DebtServiceImpl implements DebtService {
         return debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
     }
 
-    public Debt updateDebt(int loanId, DebtRequest debtRequest) {
+    public Debt updateDebt(int loanId, double amount) {
         Debt debt = debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
-        // Update properties from debtRequest to debt
+
+		debt.setAmountPaid(debt.getAmountPaid()+amount);
         return debtRepository.save(debt);
     }
 
@@ -53,13 +53,4 @@ public class DebtServiceImpl implements DebtService {
     public List<Debt> getDebtsByUserId(int userId) {
         return debtRepository.findByUserId(userId);
     }
-    
-//    public User getUserByDebtId(int debtId) {
-//        Optional<Debt> optionalDebt = debtRepository.findById(debtId);
-//        if (optionalDebt.isPresent()) {
-//            Debt debt = optionalDebt.get();
-//            return userClient.getUserById(debt.getUserId());
-//        }
-//        return null;
-//    }
 }

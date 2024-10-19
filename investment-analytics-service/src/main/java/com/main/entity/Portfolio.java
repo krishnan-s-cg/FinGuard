@@ -2,6 +2,8 @@ package com.main.entity;
 
 import java.sql.Date;
 import java.time.LocalDate;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,7 +34,7 @@ public class Portfolio {
     @Min(value = 0, message = "Current price must be non-negative")
 	private double currentPrice;
 	private LocalDate purchaseDate;
-	@CreatedDate
+	@CreationTimestamp
 	private LocalDate createdAt;
 	@UpdateTimestamp
 	private LocalDate updatedAt;

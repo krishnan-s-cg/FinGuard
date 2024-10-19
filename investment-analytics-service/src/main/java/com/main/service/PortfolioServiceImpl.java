@@ -26,7 +26,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.setQuantity(request.getQuantity());
         portfolio.setPurchasePrice(request.getPurchasePrice());
         portfolio.setCurrentPrice(request.getCurrentPrice());
-        
+        portfolio.setPurchaseDate(request.getPurchaseDate());
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
         logger.info("Portfolio added successfully with ID: {}", savedPortfolio.getUserId());
         return savedPortfolio;
@@ -56,8 +56,8 @@ public class PortfolioServiceImpl implements PortfolioService {
             logger.error("Portfolio Asset Type cannot be null for portfolio ID: {}", portfolioId);
             throw new CustomException("Portfolio Asset Type cannot be null.");
         }
-
-        portfolio.setAssetType(portfolioRequest.getAssetType());
+        portfolio.setPurchasePrice(portfolioRequest.getPurchasePrice());
+        
         Portfolio updatedPortfolio = portfolioRepository.save(portfolio);
         logger.info("Portfolio updated successfully with ID: {}", updatedPortfolio.getUserId());
         return updatedPortfolio;

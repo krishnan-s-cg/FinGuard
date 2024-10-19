@@ -6,11 +6,12 @@ import lombok.Data;
 
 @Data
 public class DebtRequest {
-	private int loanId;
-	private int userId;
+	private int userId; 
+	private String loanType;
     private Double principalAmount;
     private Double interestRate;
     private Double emiAmount;
+    private Double amountPaid;
     private Date startDate;
     private Date endDate;
 }

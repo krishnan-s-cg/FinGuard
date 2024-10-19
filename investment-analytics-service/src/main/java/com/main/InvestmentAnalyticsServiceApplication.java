@@ -13,6 +13,6 @@ public class InvestmentAnalyticsServiceApplication {
         SpringApplication.run(InvestmentAnalyticsServiceApplication.class, args);
         
         // Example usage of InvestmentCalculator
-        InvestmentCalculator.calculateInvestment("mutual funds", 1, 10000);
+        
     }
 }

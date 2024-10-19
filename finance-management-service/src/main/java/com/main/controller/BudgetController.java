@@ -1,9 +1,11 @@
 package com.main.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.dto.BudgetDto;
+import com.main.dto.BudgetReportRequest;
+import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
 import com.main.proxy.UserClient;
 import com.main.service.BudgetService;
@@ -24,9 +28,6 @@ import com.main.service.BudgetService;
 @RestController
 @RequestMapping("/api/budgets")    // defines a base URL path for the controller or method. 
 public class BudgetController {
-	
-	
-
 	    @Autowired   // Automatically injects the BudgetService bean into this class.
 	    private BudgetService budgetService;
 	    // Create a new budget
@@ -110,8 +111,8 @@ public class BudgetController {
 
 	    // Get all budgets for a user
 	    @GetMapping("/user/{userId}")
-	    public ResponseEntity<List<Budget>> getUserBudgets(@PathVariable int  userId) {
-	        List<Budget> budgets = budgetService.getUserBudgetsService(userId);
+	    public ResponseEntity<Budget> getUserBudgets(@PathVariable int  userId) {
+	        Budget budgets = budgetService.getUserBudgetsService(userId);
 	        return new ResponseEntity<>(budgets, HttpStatus.OK);
 //	    	
 //	    	 if (userId <= 0) {
@@ -137,9 +138,14 @@ public class BudgetController {
 //	         }
 	    }
 	    @GetMapping("/{budgetId}/remaining")
-	    public ResponseEntity<Double> getRemainingAmount(@PathVariable int budgetId) {
-	        double remainingAmount = budgetService.getRemainingAmountService(budgetId);
+	    public ResponseEntity<BigDecimal> getRemainingAmount(@PathVariable int budgetId) {
+	        BigDecimal remainingAmount = budgetService.getRemainingAmountService(budgetId);
 	        return new ResponseEntity<>(remainingAmount, HttpStatus.OK);
 	    }
-
+	    
+	    @GetMapping("/report")
+	    public ResponseEntity<BudgetResponse> getBudgetReport(@RequestBody BudgetReportRequest budgetReportRequest){
+	    	BudgetResponse budgetResponse = budgetService.getBudgetReport(budgetReportRequest);
+	    	return new ResponseEntity<>(budgetResponse, HttpStatus.OK);
+	    }
 }

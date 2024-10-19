@@ -8,5 +8,5 @@ import com.main.entity.Budget;
 import com.main.entity.Transaction;
 
 public interface BudgetRepository extends JpaRepository<Budget,Integer>{
-	List<Budget> findByUserId(int userId);
+	Budget findByUserId(int userId);
 }

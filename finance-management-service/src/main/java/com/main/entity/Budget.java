@@ -1,5 +1,6 @@
 package com.main.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,9 +13,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Entity
@@ -29,10 +32,14 @@ public class Budget {
 	private String category;
 	@NotNull(message="Amount cannot be null")
 //	@Positive(message ="Amount must be a posistive number")
-	private double amount;
+	@PositiveOrZero
+	@Digits(integer = 6, fraction = 2)
+	private BigDecimal amount;
 //	@NotNull(message="Amount cannot be null")
 //	@Positive(message ="Amount must be a posistive number")
-	private double spentAmount;
+	@PositiveOrZero
+	@Digits(integer = 6, fraction = 2)
+	private BigDecimal spentAmount = BigDecimal.ZERO;
 	@NotNull(message="Start date cannot be null")
 	private LocalDate startDate;
 	@NotNull(message=" End date cannot be null")

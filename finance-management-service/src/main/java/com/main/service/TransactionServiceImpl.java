@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.dto.BudgetReportRequest;
 import com.main.dto.DebtRequest;
 import com.main.dto.DebtTxn;
 import com.main.dto.TransactionRequest;
@@ -125,17 +126,28 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UserNotFoundException("User not found");
         }
 
-        BigDecimal amountBigDecimal = BigDecimal.valueOf(debtTxn.getAmount());
-        if (user.getWallet().compareTo(amountBigDecimal) < 0) {
+        if (user.getWallet().compareTo(debtTxn.getAmount()) < 0) {
             logger.error("Insufficient balance for user ID {}", debt.getUserId());
             throw new InsufficientBalanceException("Insufficient Balance");
         }
 
         debtService.updateDebt(debtTxn.getLoanId(), debtTxn.getAmount());
-        user.setWallet(user.getWallet().subtract(amountBigDecimal));
+        user.setWallet(user.getWallet().subtract(debtTxn.getAmount()));
         userClient.updateUser(user.getUserId(), user);
+        
+        Transaction txn = new Transaction();
+        txn.setUserId(debt.getUserId());
+        txn.setAmount(-debtTxn.getAmount().doubleValue());
+        txn.setWallet(user.getWallet());
+        transactionRepository.save(txn);
         
         logger.info("Debt transaction completed successfully for Loan ID: {}", debtTxn.getLoanId());
 
-    } 
+    }
+
+	@Override
+	public List<Transaction> monthlyExpense(BudgetReportRequest budgetReportRequest) {
+		List<Transaction> transactions = transactionRepository.findByTxnDateBetween(budgetReportRequest.getStartDate(), budgetReportRequest.getEndDate());
+		return transactions;
+	}
 }

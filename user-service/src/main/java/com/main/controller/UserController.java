@@ -27,7 +27,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/finguard")
-public class UserController {
+public class UserController { 
 	
 	@Autowired
 	private UserService userservice;

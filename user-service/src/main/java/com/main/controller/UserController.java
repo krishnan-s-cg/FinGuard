@@ -1,7 +1,8 @@
 package com.main.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,57 +16,67 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.dto.UpdateWallet;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
-import com.main.repository.UserRepository;
 import com.main.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/finguard")
 public class UserController {
 	
 	@Autowired
 	private UserService userservice;
 	
 	// adding new users
-	@PostMapping
-	public ResponseEntity<UserProfile> registerUsers(@RequestBody UserRegistrationRequest request)
+	@PostMapping("/user")
+	public ResponseEntity<UserProfile> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
 		UserProfile newUserprofile = userservice.addNewUsers(request);
 		return new ResponseEntity<>(newUserprofile, HttpStatus.CREATED);
 	}
 	
 	// Getting All Users
-	@GetMapping
+	@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() 
 	{
         List<User> users = userservice.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK); 
     }
 
-    // Get a user by ID
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserProfile> getUserById(@PathVariable int userId) 
+    // Get a user by ID 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Object> getUserById(@PathVariable int userId) 
     {
-        UserProfile userById = userservice.getUserById(userId);
-        return new ResponseEntity<>(userById, HttpStatus.OK); 
+    	UserProfile userById = userservice.getUserById(userId);
+        return new ResponseEntity<>(userById, HttpStatus.OK);
     }
 
-    // Update a user by ID
-    @PutMapping("/{userId}")
-    public ResponseEntity<UserProfile> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
+    // Update a user by ID 
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {
-        UserProfile updatedUser = userservice.updateUserProfile(userId, request);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK); 
+    	UserProfile updatedUser = userservice.updateUserProfile(userId, request);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
+    }
+    
+    // Update Users Wallet after he Logins
+    @PutMapping("/user/wallet/{userId}")
+    public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) 
+    {
+    	UserProfile updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
     }
 
     // Delete a user by ID
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int userId) 
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity<Object> deleteUser(@PathVariable int userId) 
     {
-        userservice.deleteUser(userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
+    	userservice.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // UserNotFoundException handled globally
     }
 }

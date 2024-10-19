@@ -1,9 +1,9 @@
 package com.main.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-
+import com.main.dto.UpdateWallet;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
@@ -16,6 +16,6 @@ public interface UserService
 	List<User> getAllUsers();
 	UserProfile updateUserProfile(int userId, UserProfileUpdateRequest user);
 	UserProfile getUserById(int userId);
-	void deleteUser(int userId);
-	
+	boolean deleteUser(int userId);
+	UserProfile updateUserWallet(int userId, BigDecimal amount);
 }

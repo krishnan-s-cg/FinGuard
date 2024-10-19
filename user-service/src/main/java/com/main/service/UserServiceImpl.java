@@ -1,94 +1,173 @@
 package com.main.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.main.client.NotificationClient;
+import com.main.dto.AccountCreationEmailRequest;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
+import com.main.dto.WalletUpdateEmailRequest;
 import com.main.entity.User;
 import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 
+
 @Service
 public class UserServiceImpl implements UserService{
 	
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	
+	private static final String USER_NOT_FOUND_MSG = "User profile not found with id: ";
+	
 	@Autowired
 	private UserRepository userRepo;
-
+	
+	@Autowired
+	private NotificationClient notificationClient;
+	
 	@Override
 	public UserProfile addNewUsers(UserRegistrationRequest addUsers) 
 	{
+		logger.info("Adding a new user with username: {}", addUsers.getUserName());
+		
 		User user = new User();
 		user.setUserName(addUsers.getUserName());
-		user.setUserName(addUsers.getPassword());
+		user.setPassword(addUsers.getPassword());
         user.setEmail(addUsers.getEmail());
         user.setRole(addUsers.getRole());
-        user.setCreatedAt(LocalDate.now());
-        user.setUpdatedAt(LocalDate.now());
         
         User savedUser = userRepo.save(user);
         
-        return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole());
-  
+        logger.debug("{} saved successfully with id: {}", savedUser.getRole(),savedUser.getUserId());
+        
+        AccountCreationEmailRequest emailrequest = new AccountCreationEmailRequest(savedUser.getEmail(), "Account Created", "Account created, thank you for choosing us.");
+        
+        notificationClient.sendAccountCreationEmail(emailrequest);
+        
+        logger.info("Account Creation email sent to {}", savedUser.getEmail());
+        
+        return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getWallet());
 	}
 
 	@Override
 	public List<User> getAllUsers() 
 	{	
+		logger.info("Fetching all users from the database.");
 		return userRepo.findAll();
 	}
 
 	@Override
 	public UserProfile updateUserProfile(int userId, UserProfileUpdateRequest u) {
 		
+		logger.info("Updating profile for user with id: {}", userId);
+		
 		// first checking is user present
-		Optional<User> userOpt = userRepo.findById(userId);
-		if(userOpt.isPresent())
-		{
-			// updating the user fields
-			User existingUser = userOpt.get();
-			existingUser.setUserName(u.getUserName());
-			existingUser.setEmail(u.getEmail());
-			existingUser.setRole(u.getRole());
-			existingUser.setUpdatedAt(LocalDate.now()); // updating the date
-			// save the updates and return it
-			User updatedUser = userRepo.save(existingUser);
-			return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole());
+		User existingUser = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
+		
+		existingUser.setUserName(u.getUserName());
+		existingUser.setEmail(u.getEmail());
+		existingUser.setRole(u.getRole());
+		existingUser.setWallet(u.getWallet());
+		existingUser.setUpdatedAt(LocalDate.now()); // updating the date
+		// save the updates and return it
+		User updatedUser = userRepo.save(existingUser);
+		logger.info("User profile updated successfully for userId: {}", userId);
+		
+			return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());
 		}
-		throw new UserNotFoundException("User not found with id: " + userId);
-	}
 
 	@Override
 	public UserProfile getUserById(int userId) {
 		
-		Optional<User> user = userRepo.findById(userId);
+		logger.info("Fetching Profile by id: {}", userId);
 		
-		if(user.isPresent())
-		{
-			User userEntity = user.get();
-			return new UserProfile(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole());
+		User userEntity = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
+			
+			logger.debug("Found user with Id: {} and wallet balance: {}", userEntity.getUserId(), userEntity.getWallet());
+			
+			return new UserProfile(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole(), userEntity.getWallet());
 		}
-		throw new UserNotFoundException("User not found with id: " + userId);
-	}
 
 	@Override
-	public void deleteUser(int userId) {
+	public boolean deleteUser(int userId) {
 		
+		logger.info("Deleting user with id: {}", userId);
+		 
 		Optional<User> user = userRepo.findById(userId);
 		
 		if (user.isPresent()) {
-            userRepo.delete(user.get()); // Delete the user
-        } else {
-            throw new UserNotFoundException("User not found with id: " + userId); 
-      }
+            userRepo.delete(user.get());
+            logger.info("User profile with Id: {} deleted successfully", userId);
+            return true; // Deleted the user successfully and return true
+        } 
+		else 
+		{
+			logger.error("User profile with Id: {} not found for deletion", userId);
+            throw new UserNotFoundException(USER_NOT_FOUND_MSG + userId);
+		}
 		
+	}
+
+	@Override
+	public UserProfile updateUserWallet(int userId, BigDecimal amount) 
+	{
+		
+		logger.info("Updating Wallet for user with id: {}", userId);
+		
+		User existingUser = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
+		
+		logger.debug("Current wallet balance for userId {}: {}",userId, existingUser.getWallet());
+		
+		BigDecimal newWalletAmount = existingUser.getWallet().add(amount);
+		
+		if(newWalletAmount.compareTo(BigDecimal.ZERO) < 0)
+		{
+			logger.error("Attempted to set negative wallet balance for UserId: {}. \nCurrent Balance: {}, attempted amount: {}", userId, existingUser.getWallet(), amount);
+			
+			throw new IllegalArgumentException("Cannot set wallet to a negative amount");
+		}
+		
+		existingUser.setWallet(newWalletAmount);
+		existingUser.setUpdatedAt(LocalDate.now());
+		
+		// saving the updated wallet
+		User updatedUser= userRepo.save(existingUser);
+		logger.info("Wallet updated successfully for userId: {}", userId);
+		
+		// Create the email request here
+	    WalletUpdateEmailRequest emailRequest = new WalletUpdateEmailRequest(
+	        updatedUser.getEmail(),
+	        "Money added to wallet",
+	        "Your Wallet has been updated with an amount of: " + amount + ". New Balance: " + newWalletAmount
+	    );
+	    
+	    // Logging the email details before sending
+	    logger.info("Sending wallet update email to: {}, subject: {}, body: {}", 
+	        emailRequest.getToEmail(), 
+	        emailRequest.getSubject(), 
+	        emailRequest.getMessage());
+	    
+	    // Check if the email body is null or empty
+	    if (emailRequest.getMessage() == null || emailRequest.getMessage().isEmpty()) {
+	        logger.error("Email body is empty or null!");
+	        throw new IllegalArgumentException("Email body cannot be empty.");
+	    }
+
+	    // Send the email
+	    notificationClient.sendWalletUpdateEmail(emailRequest);
+	    logger.info("Wallet update Email sent to {}", updatedUser.getEmail());
+		
+		return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());
+
 	}
 
 }

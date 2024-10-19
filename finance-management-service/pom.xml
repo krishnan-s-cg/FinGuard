@@ -79,8 +79,13 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 		<dependency>
+<<<<<<< HEAD
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+=======
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+>>>>>>> dd3b1393778953478ed028104ba1f5959e2f750d
 		</dependency>
 	</dependencies>
 

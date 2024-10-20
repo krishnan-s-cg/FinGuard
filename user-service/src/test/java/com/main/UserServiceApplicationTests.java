@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.main.dto.UserProfile;
+
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
@@ -61,7 +61,7 @@ class UserServiceApplicationTests {
         when(userRepository.save(any(User.class))).thenReturn(user);  // Mock repository save() method
 
         // Act
-        UserProfile result = userService.addNewUsers(request);
+        User result = userService.addNewUsers(request);
 
         // Assert
         assertEquals(1, result.getUserId());
@@ -173,7 +173,7 @@ class UserServiceApplicationTests {
         when(userRepository.save(existingUser)).thenReturn(updatedUser); // Mock saving the updated user
 
         // Act
-        UserProfile result = userService.updateUserProfile(userId, updateRequest);
+        User result = userService.updateUserProfile(userId, updateRequest);
 
         // Assert
         assertNotNull(result);
@@ -225,7 +225,7 @@ class UserServiceApplicationTests {
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity)); // Mock finding the user
 
         // Act
-        UserProfile result = userService.getUserById(userId);
+        User result = userService.getUserById(userId);
 
         // Assert
         assertNotNull(result);

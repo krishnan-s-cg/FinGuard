@@ -1,6 +1,7 @@
-package com.cg.config;
+package com.main.config;
 
-import com.cg.entity.UserCredential;
+import com.main.entity.User;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,8 +15,8 @@ public class CustomUserDetails implements UserDetails {
     private String username;
     private String password;
      private String role;
-    public CustomUserDetails(UserCredential userCredential) {
-        this.username = userCredential.getUsername();
+    public CustomUserDetails(User userCredential) {
+        this.username = userCredential.getUserName();
         this.password = userCredential.getPassword();
         this.role=userCredential.getRole();
     }

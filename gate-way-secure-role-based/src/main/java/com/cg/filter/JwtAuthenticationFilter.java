@@ -27,20 +27,21 @@ public class JwtAuthenticationFilter implements WebFilter {
         ServerHttpRequest request = exchange.getRequest();
         String authorizationHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) 
+        {
             String token = authorizationHeader.substring(7);
 
             try {
             	System.out.println(token);
                 // Validate and parse token
                 Claims claims = JwtUtil.extractClaims(token);
-   System.out.println("Claims : "+claims);
-   System.out.println(JwtUtil.isTokenExpired(claims));
+                System.out.println("Claims : "+claims);
+                System.out.println(JwtUtil.isTokenExpired(claims));
                 if (!JwtUtil.isTokenExpired(claims)) {
                     String username = JwtUtil.getUsername(claims);
                     String r = JwtUtil.getRoles(claims);
                     System.out.println(r);
-	String roles[]= {r};
+                    String roles[]= {r};
                     var authorities = Arrays.stream(roles)
                             .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                             .collect(Collectors.toList());

@@ -46,6 +46,7 @@ public class PortfolioController {
             portfolioService.deletePortfolio(portfolioId);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+    
     @GetMapping
     public ResponseEntity<List<Portfolio>> viewAllPortfolios() {
         List<Portfolio> portfolios = portfolioService.viewAllPortfolios();

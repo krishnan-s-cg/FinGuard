@@ -1,5 +1,4 @@
 package com.main.proxy;
-import com.main.dto.User;
 import com.main.dto.UserDto;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,6 +13,5 @@ public interface UserClient {
     UserDto getUserById(@PathVariable int userId);
     
     @PutMapping("/finguard/user/{userId}")
-    User updateUser(@PathVariable int userId, @RequestBody UserDto user);
-
+    UserDto updateUser(@PathVariable int userId, @RequestBody UserDto user);
 }

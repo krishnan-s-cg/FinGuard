@@ -12,7 +12,7 @@ import com.main.dto.User;
 import com.main.dto.UserDto;
 import com.main.entity.Portfolio;
 import com.main.exception.CustomException;
-import com.main.proxy.TransactionClient;
+import com.main.proxy.FinanceClient;
 import com.main.proxy.UserClient;
 import com.main.repository.PortfolioRepository;
 
@@ -28,16 +28,13 @@ public class PortfolioServiceImpl implements PortfolioService {
     private PortfolioRepository portfolioRepository;
     
     @Autowired
-    private UserClient userClient;
-    
-    @Autowired
-    private TransactionClient txnClient;
+    private FinanceClient financeClient;
 
     @Override
     public Portfolio addPortfolio(PortfolioRequest request) {
         logger.info("Adding portfolio for user ID: {}", request.getUserId());
         
-        txnClient.portfolioTransaction(request);
+        financeClient.portfolioTransaction(request);
          
         //create portfolio record
         Portfolio portfolio = new Portfolio();
@@ -97,9 +94,9 @@ public class PortfolioServiceImpl implements PortfolioService {
         logger.info("Portfolio deleted successfully with ID: {}", portfolioId);
     }
     @Override
-    public List<Portfolio> viewAllPortfolios() {
+    public List<Portfolio> viewAllPortfolios(int userId) {
         logger.info("Retrieving all portfolios");
-        List<Portfolio> portfolios = portfolioRepository.findAll();
+        List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
         if (portfolios.isEmpty()) {
             logger.warn("No portfolios found");
         } else {

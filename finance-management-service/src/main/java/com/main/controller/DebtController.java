@@ -39,6 +39,6 @@ public class DebtController {
     @GetMapping("/user/{userId}")
     public List<Debt> getDebtsByUserId(@PathVariable Integer userId) {
         List<Debt> debts = debtService.getDebtsByUserId(userId);
-        return debts.stream().map(x->x).collect(Collectors.toList());
+        return debts;
     }
 }

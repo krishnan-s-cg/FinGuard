@@ -25,6 +25,7 @@ public class ReportController {
     @Autowired
     private PortfolioService portfolioService;
 
+    //Debt Report
     @GetMapping("/financereport/{userId}")
     public ResponseEntity<List<DebtDto>> getDebtsReport(@PathVariable int userId) {
     	List<DebtDto> reports = reportService.getDebtsReport(userId);
@@ -34,7 +35,8 @@ public class ReportController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } 
     }
-
+    
+    //User Transaction Report
     @GetMapping("/incomexpensereport/{userId}")
     public ResponseEntity<List<TransactionDto>> getIncomeExpenseReport(@PathVariable int userId) {
         List<TransactionDto> reports = reportService.generateIncomeExpenseReport(userId);
@@ -44,7 +46,8 @@ public class ReportController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+    
+    // Budget Report
     @GetMapping("/budgetreport/{userId}/{startDate}/{endDate}")
     public ResponseEntity<BudgetDto> getBudgetReport(@PathVariable int userId, @PathVariable LocalDate startDate, @PathVariable LocalDate endDate) {
     	BudgetDto report = reportService.getBudgetReport(userId, startDate, endDate);
@@ -55,6 +58,7 @@ public class ReportController {
         }
     }
 
+    //Portfolio Report
     @GetMapping("/portfolioreport/{userId}")
     public ResponseEntity<List<Portfolio>> getPortfolioReport(@PathVariable int userId) {
     	List<Portfolio> report = portfolioService.viewAllPortfolios(userId);

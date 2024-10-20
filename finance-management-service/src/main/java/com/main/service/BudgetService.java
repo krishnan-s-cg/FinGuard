@@ -1,10 +1,14 @@
  package com.main.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 
 
 import com.main.dto.BudgetDto;
+import com.main.dto.BudgetReportRequest;
+import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
 
 
@@ -14,7 +18,8 @@ public interface BudgetService {
 		Budget createBudgetService(BudgetDto budgetDto);
 	    Budget getBudgetByIdService(int budgetId);
 	    Budget updateBudgetService(int budgetId, BudgetDto budgetDto);
-	    double getRemainingAmountService(int budgetId); 
+	    BigDecimal getRemainingAmountService(int budgetId); 
 	    void deleteBudgetService(int budgetId);
-	    List<Budget> getUserBudgetsService(int userId);
+	    Budget getUserBudgetsService(int userId);
+	    BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest);
 }

@@ -7,10 +7,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.main.dto.PortfolioRequest;
+import com.main.dto.TransactionDto;
+import com.main.dto.User;
+import com.main.dto.UserDto;
 import com.main.entity.Portfolio;
 import com.main.exception.CustomException;
+import com.main.proxy.TransactionClient;
+import com.main.proxy.UserClient;
 import com.main.repository.PortfolioRepository;
 
+import jakarta.transaction.Transactional;
+
+@Transactional
 @Service
 public class PortfolioServiceImpl implements PortfolioService {
 
@@ -18,10 +26,20 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Autowired
     private PortfolioRepository portfolioRepository;
+    
+    @Autowired
+    private UserClient userClient;
+    
+    @Autowired
+    private TransactionClient txnClient;
 
     @Override
     public Portfolio addPortfolio(PortfolioRequest request) {
         logger.info("Adding portfolio for user ID: {}", request.getUserId());
+        
+        txnClient.portfolioTransaction(request);
+         
+        //create portfolio record
         Portfolio portfolio = new Portfolio();
         portfolio.setUserId(request.getUserId());
         portfolio.setAssetType(request.getAssetType());
@@ -30,6 +48,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.setCurrentPrice(request.getCurrentPrice());
         portfolio.setPurchaseDate(request.getPurchaseDate());
         Portfolio savedPortfolio = portfolioRepository.save(portfolio);
+        
         logger.info("Portfolio added successfully with ID: {}", savedPortfolio.getUserId());
         return savedPortfolio;
     }

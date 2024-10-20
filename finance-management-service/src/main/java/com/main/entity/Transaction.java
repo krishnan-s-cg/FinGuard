@@ -2,6 +2,7 @@ package com.main.entity;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,9 +13,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Entity
@@ -29,20 +32,22 @@ public class Transaction {
     private int userId;
 
     @NotNull(message = "Amount cannot be null")
-    private double amount;
-
+    private BigDecimal amount;
+    
     @NotNull(message = "Wallet cannot be null")
     private BigDecimal wallet;
+    
+    private String txnType;
 
     @CreationTimestamp
     @PastOrPresent(message = "Transaction date cannot be in the future")
-    private Date txnDate;
+    private LocalDate txnDate;
 
     @CreationTimestamp
     @PastOrPresent(message = "Creation date cannot be in the future")
-    private Date createdAt;
+    private LocalDate createdAt;
 
     @UpdateTimestamp
     @PastOrPresent(message = "Update date cannot be in the future")
-    private Date updatedAt;
+    private LocalDate updatedAt;
 }

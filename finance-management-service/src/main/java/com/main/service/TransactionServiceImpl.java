@@ -9,8 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.dto.BudgetReportRequest;
 import com.main.dto.DebtRequest;
 import com.main.dto.DebtTxn;
+import com.main.dto.EmailResponse;
+import com.main.dto.PortfolioDto;
 import com.main.dto.TransactionRequest;
 import com.main.dto.User;
 import com.main.entity.Debt;
@@ -22,6 +25,7 @@ import com.main.exception.TransactionCreateFailedException;
 import com.main.exception.TransactionFetchFailedException;
 import com.main.exception.TransactionNotFoundException;
 import com.main.exception.UserNotFoundException;
+import com.main.proxy.NotificationClient;
 import com.main.proxy.UserClient;
 import com.main.repository.TransactionRepository;
 
@@ -41,6 +45,15 @@ public class TransactionServiceImpl implements TransactionService {
     
     @Autowired
     private DebtService debtService;
+    
+    @Autowired 
+    private NotificationClient notificationClient;
+    
+    @Override
+	public Transaction createTransaction(Transaction transaction) {
+		
+		return transactionRepository.save(transaction);
+	}
 
     @Override
     public Transaction getTransactionById(int id) {
@@ -92,7 +105,8 @@ public class TransactionServiceImpl implements TransactionService {
         userClient.updateUser(txn.getReceiverUserId(), receiver);
         Transaction receiverTxn = new Transaction();
         receiverTxn.setUserId(txn.getReceiverUserId());
-        receiverTxn.setAmount(amountBigDecimal.doubleValue());
+        receiverTxn.setAmount(amountBigDecimal);
+        receiverTxn.setTxnType("Credited");
         receiverTxn.setWallet(receiver.getWallet());
         logger.info("receiver txn: {}", receiverTxn); 
         transactionRepository.save(receiverTxn);
@@ -100,10 +114,23 @@ public class TransactionServiceImpl implements TransactionService {
         userClient.updateUser(txn.getSenderUserId(), sender);
         Transaction senderTxn = new Transaction();
         senderTxn.setUserId(txn.getSenderUserId());
-        senderTxn.setAmount(-amountBigDecimal.doubleValue());
+        senderTxn.setAmount(amountBigDecimal);
+        senderTxn.setTxnType("Debited");
         senderTxn.setWallet(sender.getWallet());
         logger.info("sender txn: {}", senderTxn);
         transactionRepository.save(senderTxn);
+        
+        EmailResponse emailResponseSender = new EmailResponse();
+        emailResponseSender.setToEmail(sender.getEmail());
+        emailResponseSender.setSubject("Transaction Successful!");
+        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account. Balance: %.2f", txn.getAmount(), sender.getWallet()));
+        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        
+        EmailResponse emailResponseReceiver = new EmailResponse();
+        emailResponseReceiver.setToEmail(receiver.getEmail());
+        emailResponseReceiver.setSubject("Transaction Successful!");
+        emailResponseReceiver.setMessage(String.format("An amount of %.2f has been credited from your account. Balance: %.2f", txn.getAmount(), receiver.getWallet()));
+        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
         
         logger.info("Transaction completed successfully from user ID: {} to user ID: {} with amount: {}", txn.getSenderUserId(), txn.getReceiverUserId(), txn.getAmount());
         return "Transaction successful!!";
@@ -125,17 +152,78 @@ public class TransactionServiceImpl implements TransactionService {
             throw new UserNotFoundException("User not found");
         }
 
-        BigDecimal amountBigDecimal = BigDecimal.valueOf(debtTxn.getAmount());
-        if (user.getWallet().compareTo(amountBigDecimal) < 0) {
+        if (user.getWallet().compareTo(debtTxn.getAmount()) < 0) {
             logger.error("Insufficient balance for user ID {}", debt.getUserId());
             throw new InsufficientBalanceException("Insufficient Balance");
         }
 
         debtService.updateDebt(debtTxn.getLoanId(), debtTxn.getAmount());
-        user.setWallet(user.getWallet().subtract(amountBigDecimal));
+        user.setWallet(user.getWallet().subtract(debtTxn.getAmount()));
         userClient.updateUser(user.getUserId(), user);
+        
+        Transaction txn = new Transaction();
+        txn.setUserId(debt.getUserId());
+        txn.setAmount(debtTxn.getAmount());
+        txn.setTxnType("Debited");
+        txn.setWallet(user.getWallet());
+        transactionRepository.save(txn);
+        
+        EmailResponse emailResponseSender = new EmailResponse();
+        emailResponseSender.setToEmail(user.getEmail());
+        emailResponseSender.setSubject("Debt Transaction Successful!");
+        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account on your loanId %d. Balance: %.2f", txn.getAmount(), debtTxn.getLoanId(), user.getWallet()));
+        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Debt transaction completed successfully for Loan ID: {}", debtTxn.getLoanId());
 
-    } 
+    }
+    
+    public void portfolioTransaction(PortfolioDto portfolioDto) {
+        logger.info("Starting portfolio transaction for user ID: {}", portfolioDto.getUserId());
+
+        // Fetching user details
+        User user = userClient.getUserById(portfolioDto.getUserId());
+        if (user == null) {
+            logger.error("User with ID {} not found", portfolioDto.getUserId());
+            throw new UserNotFoundException("User ID not found: " + portfolioDto.getUserId());
+        }
+
+        // Checking if the user has sufficient balance
+        if (user.getWallet().compareTo(portfolioDto.getPurchasePrice()) < 0) {
+            logger.error("Insufficient balance for user ID {}. Wallet balance: {}, Purchase price: {}", 
+                         portfolioDto.getUserId(), user.getWallet(), portfolioDto.getPurchasePrice());
+            throw new InsufficientBalanceException("Insufficient balance for user ID: " + portfolioDto.getUserId());
+        }
+
+        // Updating the user wallet (wallet - purchasePrice)
+        user.setWallet(user.getWallet().subtract(portfolioDto.getPurchasePrice()));
+        userClient.updateUser(portfolioDto.getUserId(), user);
+        logger.info("Updated wallet for user ID {}. New wallet balance: {}", portfolioDto.getUserId(), user.getWallet());
+
+        // Creating transaction record
+        Transaction txnDto = new Transaction(); 
+        txnDto.setUserId(portfolioDto.getUserId());
+        txnDto.setAmount(portfolioDto.getPurchasePrice());
+        txnDto.setWallet(user.getWallet());
+        txnDto.setTxnType("Debit");
+        transactionRepository.save(txnDto);
+
+        EmailResponse emailResponseSender = new EmailResponse();
+        emailResponseSender.setToEmail(user.getEmail());
+        emailResponseSender.setSubject("Investment Transaction Successful!");
+        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account. Balance: %.2f", portfolioDto.getPurchasePrice(), user.getWallet()));
+        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        
+        logger.info("Transaction record created for user ID {}. Transaction amount: {}", portfolioDto.getUserId(), portfolioDto.getPurchasePrice());
+
+        logger.info("Portfolio transaction completed successfully for user ID: {}", portfolioDto.getUserId());
+    }
+
+
+	@Override
+	public List<Transaction> monthlyExpense(BudgetReportRequest budgetReportRequest) {
+		List<Transaction> transactions = transactionRepository.findByTxnDateBetween(budgetReportRequest.getStartDate(), budgetReportRequest.getEndDate());
+		return transactions;
+	}
+
 }

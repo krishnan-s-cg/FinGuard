@@ -1,4 +1,5 @@
 package com.main.service;
+import java.math.BigDecimal;
 import java.util.List;  
 
 import org.slf4j.Logger;
@@ -7,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.main.dto.BudgetDto;
+import com.main.dto.BudgetReportRequest;
+import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
+import com.main.entity.Transaction;
 import com.main.exception.BudgetNotFoundException; // Import the custom exception
 import com.main.exception.InvalidBudgetException; // Import the custom exception
 import com.main.exception.RemainingAmountException;
 import com.main.proxy.UserClient;
 import com.main.repository.BudgetRepository;
+import com.main.repository.TransactionRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -25,17 +30,20 @@ public class BudgetServiceImpl implements BudgetService {
     @Autowired
     private BudgetRepository budgetRepository;
 
+//    @Autowired
+//    private UserClient userClient;
+    
     @Autowired
-    private UserClient userClient;
+    private TransactionService transactionService;
 
     @Override
     public Budget createBudgetService(BudgetDto budgetDto) {
         logger.info("Creating new budget for user ID: {}", budgetDto.getUserId());
 
-        if (budgetDto.getAmount() <= 0) {
-            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
-            throw new InvalidBudgetException("Budget amount must be positive.");
-        }
+//        if (budgetDto.getAmount() <= 0) {
+//            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
+//            throw new InvalidBudgetException("Budget amount must be positive.");
+//        }
 
         Budget budget = new Budget();
         budget.setUserId(budgetDto.getUserId());
@@ -62,10 +70,10 @@ public class BudgetServiceImpl implements BudgetService {
     public Budget updateBudgetService(int budgetId, BudgetDto budgetDto) {
         logger.info("Updating budget with ID: {}", budgetId);
 
-        if (budgetDto.getAmount() <= 0) {
-            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
-            throw new InvalidBudgetException("Budget amount must be positive.");
-        }
+//        if (budgetDto.getAmount() <= 0) {
+//            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
+//            throw new InvalidBudgetException("Budget amount must be positive.");
+//        }
 
         Budget budget = getBudgetByIdService(budgetId); // Fetch the existing budget
         budget.setAmount(budgetDto.getAmount());
@@ -86,98 +94,36 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public List<Budget> getUserBudgetsService(int userId) {
+    public Budget getUserBudgetsService(int userId) {
         logger.info("Fetching budgets for user ID: {}", userId);
         return budgetRepository.findByUserId(userId);
     }
-   
-    public double getRemainingAmountService(int budgetId) {
-//        logger.info("Calculating remaining amount for budget ID: {}", budgetId);
-//        Budget budget = getBudgetByIdService(budgetId); // Fetch the budget
-//        double remainingAmount = budget.getAmount() - budget.getSpentamount();
-//        logger.info("Remaining amount for budget ID {}: {}", budgetId, remainingAmount);
-//        return remainingAmount;
-        logger.info("Calculating remaining amount for budget ID: {}", budgetId);
-        Budget budget = getBudgetByIdService(budgetId);
-        
+    
+    public BigDecimal getRemainingAmountService(int budgetId) {
+        logger.info("Calculating remaining amount for budget ID: {}", budgetId); 
+        Budget budget = getBudgetByIdService(budgetId); // Fetch the budget
+
         // Check if spent amount exceeds total budget
-        if (budget.getSpentAmount() > budget.getAmount()) {
+        if (budget.getSpentAmount().compareTo(budget.getAmount()) > 0) {
             logger.error("Spent amount exceeds the budget for budget ID: {}", budgetId);
             throw new RemainingAmountException("Spent amount exceeds the budget.");
         }
-        double remainingAmount = budget.getAmount() - budget.getSpentAmount();
+
+        // Calculate the remaining amount using BigDecimal's subtract method
+        BigDecimal remainingAmount = budget.getAmount().subtract(budget.getSpentAmount());
         logger.info("Remaining amount for budget ID {}: {}", budgetId, remainingAmount);
+        
         return remainingAmount;
     }
+
+	@Override
+	public BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest) {
+		List<Transaction> transactions = transactionService.monthlyExpense(budgetReportRequest);
+		Budget budget = budgetRepository.findByUserId(budgetReportRequest.getUserId());
+		double totalExpenses = transactions.stream().filter(x->x.getTxnType().equalsIgnoreCase("Debited")).map(x->x.getAmount()).mapToDouble(x->x.doubleValue()).sum();
+		BudgetResponse budgetResponse = new BudgetResponse();
+		budgetResponse.setExpense(BigDecimal.valueOf(totalExpenses));
+		budgetResponse.setAmount(budget.getAmount());
+		return budgetResponse;
+	}  
 }
-
-
-
-
-//package com.main.service;
-//
-//import java.util.List;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import com.main.dto.BudgetDto;
-//import com.main.entity.Budget;
-//import com.main.proxy.UserClient;
-//import com.main.repository.BudgetRepository;
-//
-//@Service
-//public class BudgetServiceImpl implements BudgetService{
-//	
-//	@Autowired
-//	private BudgetRepository budgetRepository;
-//
-//	@Autowired
-//	private UserClient userClient;
-//
-//    @Override
-//    public Budget createBudgetService(BudgetDto budgetDto) {
-//        Budget budget = new Budget();
-//        budget.setUserId(budgetDto.getUserId());
-//        budget.setAmount(budgetDto.getAmount());
-//        budget.setCategory(budgetDto.getCategory());
-//        budget.setStartDate(budgetDto.getStartDate());
-//        budget.setEndDate(budgetDto.getEndDate());
-//        return budgetRepository.save(budget);
-//    }
-//
-//    @Override
-//    public Budget getBudgetByIdService(int budgetId) {
-//        return budgetRepository.findById(budgetId)
-//                .orElseThrow(() -> new RuntimeException("Budget not found with ID: " + budgetId));
-//    }
-//
-//    @Override
-//    public Budget updateBudgetService(int budgetId, BudgetDto budgetDto) {
-//        Budget budget = getBudgetByIdService(budgetId);  // Fetch the existing budget
-//        budget.setAmount(budgetDto.getAmount());
-//        budget.setCategory(budgetDto.getCategory());
-//        budget.setStartDate(budgetDto.getStartDate());
-//        budget.setEndDate(budgetDto.getEndDate());
-//        return budgetRepository.save(budget);
-//    }
-//
-//    @Override
-//    public void deleteBudgetService(int budgetId) {
-//        Budget budget = getBudgetByIdService(budgetId);
-//        budgetRepository.delete(budget);
-//    }
-////
-//    @Override
-//    public List<Budget> getUserBudgetsService(int userId) {
-//        return budgetRepository.findByUserId(userId);
-//    }
-////
-////	@Override
-////	public List<Budget> getBudgetForUser(int userId) {		
-////		List<Budget> budget = budgetRepository.findByUserId(userId);
-////		return budget;
-////	}
-	
-
-//}

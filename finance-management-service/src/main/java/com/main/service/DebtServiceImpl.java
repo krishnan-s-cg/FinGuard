@@ -13,6 +13,7 @@ import com.main.repository.DebtRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
 
@@ -61,13 +62,13 @@ public class DebtServiceImpl implements DebtService {
         });
     }
 
-    public Debt updateDebt(int loanId, double amount) {
+    public Debt updateDebt(int loanId, BigDecimal amount) {
     	logger.info("Updating debt for the loanId: {}", loanId);
         Debt debt = debtRepository.findById(loanId).orElseThrow(() -> {
         	logger.error("Debt not found for the loanId: {}", loanId);
         	return new DebtNotFoundException("Debt not found");
         });
-        debt.setAmountPaid(debt.getAmountPaid() + amount);
+        debt.setAmountPaid(debt.getAmountPaid().add(amount));
         return debtRepository.save(debt);
     }
 

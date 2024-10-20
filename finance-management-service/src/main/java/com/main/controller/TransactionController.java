@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.main.dto.DebtRequest;
 import com.main.dto.DebtTxn;
+import com.main.dto.PortfolioDto;
 import com.main.dto.TransactionRequest;
 import com.main.entity.Transaction;
 import com.main.service.TransactionService;
@@ -20,11 +21,11 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService; 
 
-//    @PostMapping
-//    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
-//        Transaction createdTransaction = transactionService.createTransaction(transaction);
-//        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
-//    }
+    @PostMapping
+    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
+        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable int id) {
@@ -67,6 +68,12 @@ public class TransactionController {
     public ResponseEntity<String> makeTransaction(@RequestBody TransactionRequest txn) {
     	String msg = transactionService.makeTransaction(txn);
     	return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+    
+    @PostMapping("/user/portfolio")
+    public ResponseEntity<Void> portfolioTransaction(@RequestBody PortfolioDto portfolioDto){
+    	transactionService.portfolioTransaction(portfolioDto);
+    	return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PostMapping("/user/debt")

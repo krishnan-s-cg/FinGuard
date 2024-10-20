@@ -1,6 +1,7 @@
 package com.main.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
 import com.main.proxy.UserClient;
 import com.main.service.BudgetService;
+
+import jakarta.ws.rs.Path;
 
 //@Controller + @ResponseBody   handles HTTP requests in a RESTful web service, such as GET, POST, PUT, DELETE, etc.,
                                     //  and will send back responses in formats like JSON or XML (typically JSON).
@@ -143,9 +146,14 @@ public class BudgetController {
 	        return new ResponseEntity<>(remainingAmount, HttpStatus.OK);
 	    }
 	    
-	    @GetMapping("/report")
-	    public ResponseEntity<BudgetResponse> getBudgetReport(@RequestBody BudgetReportRequest budgetReportRequest){
-	    	BudgetResponse budgetResponse = budgetService.getBudgetReport(budgetReportRequest);
+	    @GetMapping("/report/{userId}/{startDate}/{endDate}")
+	    public ResponseEntity<BudgetResponse> getBudgetReport(@PathVariable int userId, @PathVariable LocalDate startDate, @PathVariable LocalDate endDate){
+	    	BudgetReportRequest budgetResponseRequest = new BudgetReportRequest();
+	    	budgetResponseRequest.setUserId(userId);
+	    	budgetResponseRequest.setStartDate(startDate);
+	    	budgetResponseRequest.setEndDate(endDate);
+	    	
+	    	BudgetResponse budgetResponse = budgetService.getBudgetReport(budgetResponseRequest);
 	    	return new ResponseEntity<>(budgetResponse, HttpStatus.OK);
 	    }
 }

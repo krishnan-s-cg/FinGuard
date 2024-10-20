@@ -1,5 +1,6 @@
 package com.main.entity;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -30,9 +31,10 @@ public class Portfolio {
     @Min(value = 0, message = "Quantity must be non-negative")
 	private int quantity;
     @Min(value = 0, message = "Purchase price must be non-negative")
-	private double purchasePrice;
+	private BigDecimal purchasePrice;
     @Min(value = 0, message = "Current price must be non-negative")
-	private double currentPrice;
+	private BigDecimal currentPrice;
+    @CreationTimestamp
 	private LocalDate purchaseDate;
 	@CreationTimestamp
 	private LocalDate createdAt;

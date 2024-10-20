@@ -32,11 +32,12 @@ public class Transaction {
     private int userId;
 
     @NotNull(message = "Amount cannot be null")
-    private double amount;
+    private BigDecimal amount;
     
-
     @NotNull(message = "Wallet cannot be null")
     private BigDecimal wallet;
+    
+    private String txnType;
 
     @CreationTimestamp
     @PastOrPresent(message = "Transaction date cannot be in the future")

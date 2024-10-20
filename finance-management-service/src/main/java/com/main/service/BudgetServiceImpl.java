@@ -120,9 +120,9 @@ public class BudgetServiceImpl implements BudgetService {
 	public BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest) {
 		List<Transaction> transactions = transactionService.monthlyExpense(budgetReportRequest);
 		Budget budget = budgetRepository.findByUserId(budgetReportRequest.getUserId());
-		double a = transactions.stream().mapToDouble(x->x.getAmount()).sum();
+		double totalExpenses = transactions.stream().filter(x->x.getTxnType().equalsIgnoreCase("Debited")).map(x->x.getAmount()).mapToDouble(x->x.doubleValue()).sum();
 		BudgetResponse budgetResponse = new BudgetResponse();
-		budgetResponse.setExpense(BigDecimal.valueOf(a));
+		budgetResponse.setExpense(BigDecimal.valueOf(totalExpenses));
 		budgetResponse.setAmount(budget.getAmount());
 		return budgetResponse;
 	}  

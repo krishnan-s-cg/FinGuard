@@ -14,11 +14,15 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "userProfile")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "userlogin")
 public class User 
 {
 	@Id
@@ -40,7 +44,6 @@ public class User
 	
 	@CreationTimestamp
 	@PastOrPresent
-
 	private LocalDate createdAt;
 	
 	@UpdateTimestamp

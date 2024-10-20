@@ -1,5 +1,10 @@
 package com.main.repository;
 
-public class ReportRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.main.entity.Report;
+
+public interface ReportRepository extends JpaRepository<Report,Integer > {
+	
 
 }

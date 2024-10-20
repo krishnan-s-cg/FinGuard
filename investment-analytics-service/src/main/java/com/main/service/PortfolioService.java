@@ -10,5 +10,5 @@ public interface PortfolioService {
     Portfolio viewPortfolio(int portfolioId);
     Portfolio updatePortfolio(int portfolioId, PortfolioRequest portfolioRequest);
     void deletePortfolio(int portfolioId);
-	List<Portfolio> viewAllPortfolios();
+	List<Portfolio> viewAllPortfolios(int userId);
 }

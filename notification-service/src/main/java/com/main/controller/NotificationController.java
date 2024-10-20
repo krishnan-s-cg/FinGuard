@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.dto.EmailRequest;
-import com.main.dto.TransferObj;
-import com.main.dto.WalletUpdateEmailRequest;
-//import com.main.dto.TransferObj;
 import com.main.service.NotificationService;
 
 @RestController
@@ -22,21 +19,10 @@ public class NotificationController {
 
 	// Endpoint to send account creation email
 	@PostMapping("/sendEmail")
-	public ResponseEntity<Void> sendAccountCreationEmail(@RequestBody EmailRequest emailRequest) {
+	public ResponseEntity<Void> sendEmail(@RequestBody EmailRequest emailRequest) 
+	{
 		// Call the service method to send the email
-		notificationservice.sendAccountCreationEmail(emailRequest);
+		notificationservice.sendEmail(emailRequest);
 		return new ResponseEntity<>(HttpStatus.OK); // Return success status
 	}
-
-	@PostMapping("/sendWalletUpdateEmail")
-	public ResponseEntity<Void> sendWalletUpdateEmail(@RequestBody WalletUpdateEmailRequest walletUpdateRequest) {
-		notificationservice.sendWalletUpdateEmail(walletUpdateRequest);
-		return new ResponseEntity<Void>(HttpStatus.OK);
-	}
-
-//	@PostMapping("/send-msg/send") 
-//	public String transcationMsg(@RequestBody TransferObj obj) { 
-//		notificationservice.transcationEmail(obj); 
-//		return "Email Sent successfully"; 
-//	}
 }

@@ -11,17 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.main.client.NotificationClient;
-import com.main.dto.AccountCreationEmailRequest;
+import com.main.dto.EmailRequest;
 import com.main.dto.UserProfile;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
-import com.main.dto.WalletUpdateEmailRequest;
 import com.main.entity.User;
 import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 
 
-@Service
+@Service 
 public class UserServiceImpl implements UserService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -49,9 +48,14 @@ public class UserServiceImpl implements UserService{
         
         logger.debug("{} saved successfully with id: {}", savedUser.getRole(),savedUser.getUserId());
         
-        AccountCreationEmailRequest emailrequest = new AccountCreationEmailRequest(savedUser.getEmail(), "Account Created", "Account created, thank you for choosing us.");
+        EmailRequest emailrequest = new EmailRequest(savedUser.getEmail()
+        		, "Welcome to FinGuard – Your Financial Journey Starts Here!"
+        		, "Dear " + savedUser.getUserName() + ",\n"+ "We’re excited to welcome you to FinGuard! Thank you for choosing us to help manage your financial goals and journey. Your account has been successfully created, and you’re now part of a community dedicated to making finance management smarter and easier.\r\n"
+        			+ "\r\n" + "Feel free to explore our features, from budget tracking to personalized financial insights. We’re here to support you every step of the way.\r\n"
+        			+ "\r\n" + "If you have any questions or need assistance, our support team is always ready to help.\r\n"
+        			+ "\r\n" + "Best regards,\r\n" + "The FinGuard Team");
         
-        notificationClient.sendAccountCreationEmail(emailrequest);
+        notificationClient.sendEmail(emailrequest);
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
         
@@ -144,26 +148,28 @@ public class UserServiceImpl implements UserService{
 		logger.info("Wallet updated successfully for userId: {}", userId);
 		
 		// Create the email request here
-	    WalletUpdateEmailRequest emailRequest = new WalletUpdateEmailRequest(
+	    EmailRequest emailRequest = new EmailRequest(
 	        updatedUser.getEmail(),
-	        "Money added to wallet",
-	        "Your Wallet has been updated with an amount of: " + amount + ". New Balance: " + newWalletAmount
-	    );
+	        "Wallet Successfully Updated!",
+	        "Dear " + updatedUser.getUserName() + ",\r\n" +
+	        		"\r\n" +
+	        		"We're excited to inform you that your wallet has been successfully credited with " + amount + ". Your new balance is now " + newWalletAmount + ".\r\n" +
+	        		"\r\n" +
+	        		"Thank you for trusting FinGuard to manage your finances. We’re here to support you every step of the way!\r\n" +
+	        		"\r\n" +
+	        		"If you have any questions or need assistance, feel free to contact our support team.\r\n" +
+	        		"\r\n" +
+	        		"Best regards,\r\n" +
+	        		"The FinGuard Team");
 	    
 	    // Logging the email details before sending
 	    logger.info("Sending wallet update email to: {}, subject: {}, body: {}", 
 	        emailRequest.getToEmail(), 
 	        emailRequest.getSubject(), 
-	        emailRequest.getMessage());
-	    
-	    // Check if the email body is null or empty
-	    if (emailRequest.getMessage() == null || emailRequest.getMessage().isEmpty()) {
-	        logger.error("Email body is empty or null!");
-	        throw new IllegalArgumentException("Email body cannot be empty.");
-	    }
+	        emailRequest.getBody());
 
 	    // Send the email
-	    notificationClient.sendWalletUpdateEmail(emailRequest);
+	    notificationClient.sendEmail(emailRequest);
 	    logger.info("Wallet update Email sent to {}", updatedUser.getEmail());
 		
 		return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());

@@ -7,6 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.main.dto.DebtRequest;
+import com.main.dto.DebtTxn;
+import com.main.dto.PortfolioDto;
+import com.main.dto.TransactionRequest;
 import com.main.entity.Transaction;
 import com.main.service.TransactionService;
 
@@ -15,13 +19,13 @@ import com.main.service.TransactionService;
 public class TransactionController {
 
     @Autowired
-    private TransactionService transactionService;
+    private TransactionService transactionService; 
 
-//    @PostMapping
-//    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
-//        Transaction createdTransaction = transactionService.createTransaction(transaction);
-//        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
-//    }
+    @PostMapping
+    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
+        return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable int id) {
@@ -55,9 +59,26 @@ public class TransactionController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    @PostMapping("/user/txn/{senderUserId}/{receiverUserId}/{amount}")
-    public ResponseEntity<Void> makeTransaction(@PathVariable int senderUserId, @PathVariable int receiverUserId, @PathVariable double amount) {
-        transactionService.makeTransaction(senderUserId, receiverUserId, amount);
-        return new ResponseEntity<>(HttpStatus.OK);
+//    @PostMapping("/user/txn/{senderUserId}/{receiverUserId}/{amount}")
+//    public ResponseEntity<Void> makeTransaction(@PathVariable int senderUserId, @PathVariable int receiverUserId, @PathVariable double amount) {
+//        transactionService.makeTransaction(senderUserId, receiverUserId, amount);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
+    @PostMapping("/user/txn")
+    public ResponseEntity<String> makeTransaction(@RequestBody TransactionRequest txn) {
+    	String msg = transactionService.makeTransaction(txn);
+    	return new ResponseEntity<>(msg, HttpStatus.OK);
+    }
+    
+    @PostMapping("/user/portfolio")
+    public ResponseEntity<Void> portfolioTransaction(@RequestBody PortfolioDto portfolioDto){
+    	transactionService.portfolioTransaction(portfolioDto);
+    	return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    @PostMapping("/user/debt")
+    public ResponseEntity<Void> debtTransaction(@RequestBody DebtTxn debtTxn){
+    	transactionService.debtTransaction(debtTxn);
+    	return new ResponseEntity<>(HttpStatus.OK);
     }
 }

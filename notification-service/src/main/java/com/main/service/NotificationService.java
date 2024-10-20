@@ -11,11 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.main.dto.EmailRequest;
 
-import com.main.dto.WalletUpdateEmailRequest;
-
-
-
-
 
 @Service
 public class NotificationService 
@@ -28,7 +23,7 @@ public class NotificationService
 	@Value("${spring.mail.username}")
 	private String fromEmailId;
 	
-	public void sendAccountCreationEmail(EmailRequest emailRequest)
+	public void sendEmail(EmailRequest emailRequest)
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
 		
@@ -38,26 +33,8 @@ public class NotificationService
 		message.setText(emailRequest.getBody());
 		
 		javaMailSender.send(message);
-		 logger.info("Account created mail sent to {}" ,emailRequest.getToEmail());
-			
+		 logger.info("Account created mail sent to {}" ,emailRequest.getToEmail());	
 	}
-	
-	public void sendWalletUpdateEmail(WalletUpdateEmailRequest walletupdaterequest)
-	{
-		logger.info("Sending wallet update email to: {}, subject: {}, body: {}", 
-		        walletupdaterequest.getToEmail(), 
-		        walletupdaterequest.getSubject(), 
-		        walletupdaterequest.getMessage());
-		
-		 SimpleMailMessage message = new SimpleMailMessage();
-	        
-	        message.setFrom(fromEmailId);
-	        message.setTo(walletupdaterequest.getToEmail());
-	        message.setSubject(walletupdaterequest.getSubject());
-	        message.setText(walletupdaterequest.getMessage());
-	        
-	        javaMailSender.send(message);
-	        logger.info("Account created mail sent to {}", walletupdaterequest.getToEmail());
-	}
+
 	
 }

@@ -2,25 +2,27 @@ package com.main.exception;
 
 public class CustomException extends RuntimeException {
 
-    private String errorCode;
-    private String errorMessage;
+	public class UserNotFoundException extends RuntimeException {
+	    public UserNotFoundException(String message) {
+	        super(message);
+	    }
+	}
+	public class TransactionNotFoundException extends RuntimeException {
+	    public TransactionNotFoundException(String message) {
+	        super(message);
+	    }
+	}
 
-    public CustomException(String errorMessage) {
-        super(errorMessage);
-        this.errorMessage = errorMessage;
-    }
+	public class BudgetNotFoundException extends RuntimeException {
+	    public BudgetNotFoundException(String message) {
+	        super(message);
+	    }
+	}
 
-    public CustomException(String errorCode, String errorMessage) {
-        super(errorMessage);
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+	public class DebtNotFoundException extends RuntimeException {
+	    public DebtNotFoundException(String message) {
+	        super(message);
+	    }
+	    
+}
 }

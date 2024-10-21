@@ -67,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> getTransactionsByUserId(int userId) {
         logger.info("Fetching transactions for user ID: {}", userId);
-        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+        List<Transaction> transactions = transactionRepository.findByUserId(userId); 
         if (transactions == null || transactions.isEmpty()) {
             logger.warn("No transactions found for user ID: {}", userId);
             throw new TransactionNotFoundException("Transaction not found for the userId: " + userId);
@@ -197,7 +197,7 @@ public class TransactionServiceImpl implements TransactionService {
         		+ "Your updated account balance is $%.2f.%n%nPlease ensure to keep track of your loan "
         		+ "payments to avoid any penalties. %n%nThank you for choosing FinGuard for your financial needs.%n%nBest regards, %nThe FinGuard Team"
         		, user.getUserName(), txn.getAmount(), debtTxn.getLoanId(), user.getWallet() ) );        
-        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+//        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Debt transaction completed successfully for Loan ID: {}", debtTxn.getLoanId());
 
@@ -220,7 +220,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new InsufficientBalanceException("Insufficient balance for user ID: " + portfolioDto.getUserId());
         }
 
-        // Updating the user wallet (wallet - purchasePrice)
+        // Updating the user wallet (wallet - purchasePrice) 
         user.setWallet(user.getWallet().subtract(portfolioDto.getPurchasePrice()));
         userClient.updateUser(portfolioDto.getUserId(), user);
         logger.info("Updated wallet for user ID {}. New wallet balance: {}", portfolioDto.getUserId(), user.getWallet());
@@ -245,7 +245,9 @@ public class TransactionServiceImpl implements TransactionService {
         	        portfolioDto.getPurchasePrice(),
         	        user.getWallet()
         	    )
-        	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        	);        
+        
+//        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Transaction record created for user ID {}. Transaction amount: {}", portfolioDto.getUserId(), portfolioDto.getPurchasePrice());
         

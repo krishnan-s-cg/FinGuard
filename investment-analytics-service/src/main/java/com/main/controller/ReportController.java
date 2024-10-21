@@ -12,6 +12,9 @@ import com.main.entity.Portfolio;
 import com.main.proxy.FinanceClient;
 import com.main.service.PortfolioService;
 import com.main.service.ReportService;
+
+import jakarta.validation.Valid;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class ReportController {
     
     // Budget Report
     @GetMapping("/budgetreport/{userId}/{startDate}/{endDate}")
-    public ResponseEntity<BudgetDto> getBudgetReport(@PathVariable int userId, @PathVariable LocalDate startDate, @PathVariable LocalDate endDate) {
+    public ResponseEntity<BudgetDto> getBudgetReport(@PathVariable  int userId, @PathVariable LocalDate startDate, @PathVariable LocalDate endDate) {
     	BudgetDto report = reportService.getBudgetReport(userId, startDate, endDate);
         if (report != null) {
             return new ResponseEntity<>(report, HttpStatus.OK);

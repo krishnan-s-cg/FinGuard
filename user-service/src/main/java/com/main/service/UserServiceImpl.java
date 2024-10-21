@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +66,11 @@ public class UserServiceImpl implements UserService{
         			+ "\r\n" + "If you have any questions or need assistance, our support team is always ready to help.\r\n"
         			+ "\r\n" + "Best regards,\r\n" + "The FinGuard Team");
         
-        notificationClient.sendEmail(emailrequest);
+        ResponseEntity<Void> response = notificationClient.sendEmail(emailrequest);
+        
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Failed to send account creation email");
+        }
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
         
@@ -75,7 +81,12 @@ public class UserServiceImpl implements UserService{
 	public List<User> getAllUsers() 
 	{	
 		logger.info("Fetching all users from the database.");
-		return userRepo.findAll();
+		List<User> allUsers = userRepo.findAll();
+		if(allUsers.isEmpty())
+		{
+			throw new UserNotFoundException("No users found");
+		}
+		return allUsers;
 	}
 
 	@Override
@@ -94,7 +105,6 @@ public class UserServiceImpl implements UserService{
 		// save the updates and return it
 		User updatedUser = userRepo.save(existingUser);
 		logger.info("User profile updated successfully for userId: {}", userId);
-		
 			return updatedUser;
 		}
 

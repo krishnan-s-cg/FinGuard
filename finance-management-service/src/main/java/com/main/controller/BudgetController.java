@@ -41,7 +41,7 @@ public class BudgetController {
 	            return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
 	    }
 
-	    // Get a budget by ID
+	    // Get a budget by ID 
 	    @GetMapping("/{budgetId}")
 	    public ResponseEntity<Budget> getBudgetById(@PathVariable int budgetId) {
 	        Budget budget = budgetService.getBudgetByIdService(budgetId);

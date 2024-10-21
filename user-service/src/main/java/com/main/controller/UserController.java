@@ -37,7 +37,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/finguard")
-//@Api(value = "User Service", tags = {" User Management"})
+//@Api(value = "User Service", tags = {"User Management"})
 public class UserController { 
 	
 	@Autowired

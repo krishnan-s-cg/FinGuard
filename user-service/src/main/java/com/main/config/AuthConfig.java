@@ -27,10 +27,11 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/finguard/user/register", "/finguard/user/login", "/finguard/validate",
-                    "/swagger-ui/**","/v3/api-docs/**").permitAll()
-                .requestMatchers("/finguard/users").hasAnyRole("user", "admin") // Adjust roles as needed
-                .anyRequest().authenticated()
+               .requestMatchers("/**").permitAll()
+                //    "/swagger-ui/**","/v3/api-docs/**").permitAll()
+              //  .requestMatchers("/finguard/users").hasRole("admin") // Adjust roles as needed
+               // .requestMatchers("/**").hasRole("user")
+               // .anyRequest().authenticated()
                 .and()
                 .build();
     }

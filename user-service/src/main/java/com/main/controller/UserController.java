@@ -31,10 +31,13 @@ import com.main.entity.User;
 import com.main.repository.UserRepository;
 import com.main.service.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/finguard")
+//@Api(value = "User Service", tags = {" User Management"})
 public class UserController { 
 	
 	@Autowired
@@ -47,6 +50,7 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 	
 	// registering new users
+//	@ApiOperation(value = "Register a new user", response = User.class)
 	@PostMapping("/user/register")
 	public ResponseEntity<User> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
@@ -55,6 +59,7 @@ public class UserController {
 	}
 	
 	// Login for existing user
+//	@ApiOperation(value = "Login for existing user", response = ResponseDto.class)
 	@PostMapping("/user/login")
     public ResponseDto getToken(@RequestBody AuthRequest authRequest) 
 	{
@@ -80,7 +85,8 @@ public class UserController {
         }
     }
 	
-	// Cheking the token is valid
+	// Checking the token is valid
+//	@ApiOperation(value = "Validate JWT token")
 	@GetMapping("/validate")
     public String validateToken(@RequestParam("token") String token) {
         userservice.validateToken(token);
@@ -88,6 +94,7 @@ public class UserController {
     }
 	
 	// Getting All Users
+//	@ApiOperation(value = "Get all registered users", response = List.class)
 	@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() 
 	{
@@ -96,6 +103,7 @@ public class UserController {
     }
 
     // Get a user by ID 
+//	@ApiOperation(value = "Get user details by ID", response = User.class)
     @GetMapping("/user/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable int userId) 
     {
@@ -104,6 +112,7 @@ public class UserController {
     }
 
     // Update a user by ID 
+//	@ApiOperation(value = "Update user details", response = User.class)
     @PutMapping("/user/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {
@@ -112,6 +121,7 @@ public class UserController {
     }
     
     // Update Users Wallet after he Logins
+//	@ApiOperation(value = "Update user wallet balance", response = User.class)
     @PutMapping("/user/wallet/{userId}")
     public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) 
     {
@@ -120,6 +130,7 @@ public class UserController {
     }
 
     // Delete a user by ID
+//	@ApiOperation(value = "Delete a user by ID")
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable int userId) 
     {

@@ -24,11 +24,12 @@ public class SecurityConfig {
         return http
             .authorizeExchange(exchanges -> exchanges
            //     .pathMatchers("/public/**").permitAll()   // Public routes, no auth required
-                .pathMatchers("/user-service/finguard/user/login", "/user-service/finguard/user/register").permitAll() // Allow access without authentication
-                .pathMatchers(HttpMethod.POST,"/user-service/finguard/user").hasRole("ROLE_user")
-                .pathMatchers(HttpMethod.PUT,"/user-service/finguard/user/**").hasRole("ROLE_user")
-                .pathMatchers(HttpMethod.GET,"/user-service/finguard/users").hasRole("ROLE_admin")	
-                .pathMatchers(HttpMethod.GET,"/user-service/finguard/user/**").permitAll()
+              //  .pathMatchers("/user-service/finguard/user/login", "/user-service/finguard/user/register").permitAll() // Allow access without authentication
+               // .pathMatchers(HttpMethod.PUT,"/user-service/finguard/user/wallet/**").permitAll()
+              //  .pathMatchers(HttpMethod.POST,"/user-service/finguard/user").hasRole("ROLE_user")
+                .pathMatchers(HttpMethod.PUT,"/user-service/finguard/user/wallet/**").hasRole("ROLE_user")
+                //.pathMatchers(HttpMethod.GET,"/user-service/finguard/users").hasRole("ROLE_admin")	
+           //     .pathMatchers(HttpMethod.GET,"/user-service/finguard/user/**").permitAll()
 //                .pathMatchers("/order-service/loadbalance/**").hasRole("ROLE_admin") // ADMIN role only for /admin/**
 //                .pathMatchers("/order-service/feign/**").hasRole("ROLE_user")   // USER role only for /user/**
                 .anyExchange().authenticated()              // All other routes require authentication

@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService{
         			+ "\r\n" + "If you have any questions or need assistance, our support team is always ready to help.\r\n"
         			+ "\r\n" + "Best regards,\r\n" + "The FinGuard Team");
         
-//        notificationClient.sendEmail(emailrequest);
+        notificationClient.sendEmail(emailrequest);
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
         

@@ -58,6 +58,36 @@ public class GlobalExceptionHandler {
 	{
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
+	@ExceptionHandler(DebtCreateFailedException.class)
+	public ResponseEntity<Object> handleDebtCreateFailedException(DebtCreateFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
+	@ExceptionHandler(DebtFetchFailedException.class)
+	public ResponseEntity<Object> handleDebtFetchFailedException(DebtFetchFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
+	@ExceptionHandler(DebtUpdateFailedException.class)
+	public ResponseEntity<Object> handleDebtUpdateFailedException(DebtUpdateFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
+	@ExceptionHandler(DebtDeleteFailedException.class)
+	public ResponseEntity<Object> handleDebtDeleteFailedException(DebtDeleteFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
+	@ExceptionHandler(TransactionCreateFailedException.class)
+	public ResponseEntity<Object> handleTransactionCreateFailedException(TransactionCreateFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
+	@ExceptionHandler(TransactionFetchFailedException.class)
+	public ResponseEntity<Object> handleTransactionFetchFailedException(TransactionFetchFailedException ex, WebRequest request)
+	{
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+	}
 	
 	
 }

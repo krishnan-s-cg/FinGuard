@@ -1,20 +1,32 @@
 package com.main.service;
 
 import com.main.dto.DebtRequest;
-import com.main.dto.User;
 import com.main.entity.Debt;
+import com.main.exception.DebtCreateFailedException;
+import com.main.exception.DebtDeleteFailedException;
+import com.main.exception.DebtFetchFailedException;
+import com.main.exception.DebtNotFoundException;
+import com.main.exception.DebtUpdateFailedException;
+import com.main.exception.UserNotFoundException;
 import com.main.proxy.UserClient;
 import com.main.repository.DebtRepository;
 
+import jakarta.transaction.Transactional;
+
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+@Transactional
 @Service
 public class DebtServiceImpl implements DebtService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DebtServiceImpl.class);
 
     @Autowired
     private DebtRepository debtRepository;
@@ -23,43 +35,60 @@ public class DebtServiceImpl implements DebtService {
     private UserClient userClient;
 
     public Debt createDebt(DebtRequest debtRequest) {
+    	logger.info("Creating a new Debt");
+        if (userClient.getUserById(debtRequest.getUserId()) == null) {
+        	logger.error("UserId not found");
+            throw new UserNotFoundException("User ID not found: " + debtRequest.getUserId());
+        }
+
         Debt debt = new Debt();
         debt.setUserId(debtRequest.getUserId());
         debt.setLoanType(debtRequest.getLoanType());
         debt.setPrincipalAmount(debtRequest.getPrincipalAmount());
         debt.setInterestRate(debtRequest.getInterestRate());
         debt.setEmiAmount(debtRequest.getEmiAmount());
+        debt.setAmountPaid(debtRequest.getAmountPaid());
         debt.setStartDate(debtRequest.getStartDate());
         debt.setEndDate(debtRequest.getEndDate());
-        debt.setCreatedAt(new Date(System.currentTimeMillis()));
-        debt.setUpdatedAt(new Date(System.currentTimeMillis()));
-        return debtRepository.save(debt);
+        return debtRepository.save(debt); 
     }
+
 
     public Debt getDebtById(int loanId) {
-        return debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
+    	logger.info("Fetching debt for the loanId: {}", loanId);
+        return debtRepository.findById(loanId).orElseThrow(() -> { 
+        	logger.error("Error Deleting debt by ID: {}", loanId); 
+        	return new DebtNotFoundException("Debt not found");
+        });
     }
 
-    public Debt updateDebt(int loanId, DebtRequest debtRequest) {
-        Debt debt = debtRepository.findById(loanId).orElseThrow(() -> new RuntimeException("Debt not found"));
-        // Update properties from debtRequest to debt
+    public Debt updateDebt(int loanId, BigDecimal amount) {
+    	logger.info("Updating debt for the loanId: {}", loanId);
+        Debt debt = debtRepository.findById(loanId).orElseThrow(() -> {
+        	logger.error("Debt not found for the loanId: {}", loanId);
+        	return new DebtNotFoundException("Debt not found");
+        });
+        debt.setAmountPaid(debt.getAmountPaid().add(amount));
         return debtRepository.save(debt);
     }
 
     public void deleteDebt(int loanId) {
-        debtRepository.deleteById(loanId);
+        try {
+        	logger.info("Deleting the debt with the loanId: {}", loanId);
+            debtRepository.deleteById(loanId);
+        } catch (Exception e) {
+            logger.error("Error deleting debt: {}", e.getMessage());
+            throw new DebtDeleteFailedException("Failed to delete debt");
+        }
     }
 
     public List<Debt> getDebtsByUserId(int userId) {
-        return debtRepository.findByUserId(userId);
+        try {
+        	logger.info("Fetching Debts by UserId: {}", userId);
+            return debtRepository.findByUserId(userId);
+        } catch (Exception e) {
+            logger.error("Error fetching debts by user ID: {}", e.getMessage());
+            throw new DebtFetchFailedException("Failed to fetch debts");
+        }
     }
-    
-//    public User getUserByDebtId(int debtId) {
-//        Optional<Debt> optionalDebt = debtRepository.findById(debtId);
-//        if (optionalDebt.isPresent()) {
-//            Debt debt = optionalDebt.get();
-//            return userClient.getUserById(debt.getUserId());
-//        }
-//        return null;
-//    }
 }

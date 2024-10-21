@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/debts")
+@RequestMapping("/debts") 
 public class DebtController {
 
     @Autowired
@@ -26,10 +26,10 @@ public class DebtController {
     	return debtService.getDebtById(loanId);
     }
 
-    @PutMapping("/{loanId}")
-    public Debt updateDebt(@PathVariable Integer loanId, @RequestBody DebtRequest debtRequest) {
-    	return debtService.updateDebt(loanId, debtRequest);
-    }
+//    @PutMapping("/{loanId}")
+//    public Debt updateDebt(@PathVariable Integer loanId, double amount) {
+//    	return debtService.updateDebt(loanId, amount);
+//    }
 
     @DeleteMapping("/{loanId}")
     public void deleteDebt(@PathVariable Integer loanId) {
@@ -39,6 +39,6 @@ public class DebtController {
     @GetMapping("/user/{userId}")
     public List<Debt> getDebtsByUserId(@PathVariable Integer userId) {
         List<Debt> debts = debtService.getDebtsByUserId(userId);
-        return debts.stream().map(x->x).collect(Collectors.toList());
+        return debts;
     }
 }

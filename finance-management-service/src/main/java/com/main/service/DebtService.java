@@ -1,5 +1,6 @@
 package com.main.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,10 +13,9 @@ public interface DebtService {
 
     public Debt getDebtById(int loanId); 
 
-    public Debt updateDebt(int loanId, DebtRequest debtRequest);
+    public Debt updateDebt(int loanId, BigDecimal amount);
 
     public void deleteDebt(int loanId);
 
     public List<Debt> getDebtsByUserId(int userId);
-
 }

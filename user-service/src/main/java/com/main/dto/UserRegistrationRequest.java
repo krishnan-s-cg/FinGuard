@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserRegistrationRequest 
 {
 	@NotNull(message = "username cannot be empty")
@@ -16,7 +18,7 @@ public class UserRegistrationRequest
 	private String userName;
 	
 	@NotNull(message = "Password should not be empty")
-	@Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,20}$")
+	@Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^,.])(?=\\S+$).{8,20}$")
 	private String password;
 	
 	@NotNull(message = "Email Id should not be empty")

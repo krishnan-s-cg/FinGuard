@@ -1,12 +1,15 @@
 package com.main.controller;
 
-import java.math.BigDecimal;
+
 import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,33 +17,84 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.dto.AuthRequest;
+import com.main.dto.ResponseDto;
+
 import com.main.dto.UpdateWallet;
-import com.main.dto.UserProfile;
+
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
+import com.main.repository.UserRepository;
 import com.main.service.UserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/finguard")
-public class UserController {
+//@Api(value = "User Service", tags = {" User Management"})
+public class UserController { 
 	
 	@Autowired
 	private UserService userservice;
 	
-	// adding new users
-	@PostMapping("/user")
-	public ResponseEntity<UserProfile> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
+	@Autowired
+	private UserRepository userRepo;
+	
+	@Autowired
+    private AuthenticationManager authenticationManager;
+	
+	// registering new users
+//	@ApiOperation(value = "Register a new user", response = User.class)
+	@PostMapping("/user/register")
+	public ResponseEntity<User> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
-		UserProfile newUserprofile = userservice.addNewUsers(request);
-		return new ResponseEntity<>(newUserprofile, HttpStatus.CREATED);
+		User newUser = userservice.addNewUsers(request);
+		return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 	}
 	
+	// Login for existing user
+//	@ApiOperation(value = "Login for existing user", response = ResponseDto.class)
+	@PostMapping("/user/login")
+    public ResponseDto getToken(@RequestBody AuthRequest authRequest) 
+	{
+    	System.out.println("yes .."+authRequest.getUserName()+"  "+authRequest.getPassword());
+    	
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+        
+        System.out.println(authenticate.isAuthenticated());
+        
+        if (authenticate.isAuthenticated()) 
+        {
+        	User user= userRepo.findByUserName(authRequest.getUserName()).get();
+        	String token=
+        	//service.generateToken(authRequest.getUsername(),user.getRole());
+        			userservice.generateToken(user.getUserId()+"",user.getRole());
+        	
+        	ResponseDto resDto=new ResponseDto();
+        	resDto.setToken(token);
+        	resDto.setRole(user.getRole());
+        	return resDto;
+        } else {
+            throw new RuntimeException("invalid access");
+        }
+    }
+	
+	// Checking the token is valid
+//	@ApiOperation(value = "Validate JWT token")
+	@GetMapping("/validate")
+    public String validateToken(@RequestParam("token") String token) {
+        userservice.validateToken(token);
+        return "Token is valid";
+    }
+	
 	// Getting All Users
+//	@ApiOperation(value = "Get all registered users", response = List.class)
 	@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() 
 	{
@@ -49,30 +103,34 @@ public class UserController {
     }
 
     // Get a user by ID 
+//	@ApiOperation(value = "Get user details by ID", response = User.class)
     @GetMapping("/user/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable int userId) 
     {
-    	UserProfile userById = userservice.getUserById(userId);
+    	User userById = userservice.getUserById(userId);
         return new ResponseEntity<>(userById, HttpStatus.OK);
     }
 
     // Update a user by ID 
+//	@ApiOperation(value = "Update user details", response = User.class)
     @PutMapping("/user/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
     {
-    	UserProfile updatedUser = userservice.updateUserProfile(userId, request);
+    	User updatedUser = userservice.updateUserProfile(userId, request);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
     }
     
     // Update Users Wallet after he Logins
+//	@ApiOperation(value = "Update user wallet balance", response = User.class)
     @PutMapping("/user/wallet/{userId}")
     public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) 
     {
-    	UserProfile updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
+    	User updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
         return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
     }
 
     // Delete a user by ID
+//	@ApiOperation(value = "Delete a user by ID")
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable int userId) 
     {

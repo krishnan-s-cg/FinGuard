@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionRequest {
-	private int senderUserId;
-	private int receiverUserId;
-	private double amount;
+public class AuthRequest {
+
+    private String userName;
+    private String password;
+
 }

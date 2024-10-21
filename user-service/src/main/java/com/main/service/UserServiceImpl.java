@@ -8,11 +8,13 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.main.service.JwtService;
 import com.main.client.NotificationClient;
 import com.main.dto.EmailRequest;
-import com.main.dto.UserProfile;
+
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
@@ -28,19 +30,26 @@ public class UserServiceImpl implements UserService{
 	private static final String USER_NOT_FOUND_MSG = "User profile not found with id: ";
 	
 	@Autowired
+    private JwtService jwtService;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
 	private UserRepository userRepo;
 	
 	@Autowired
 	private NotificationClient notificationClient;
 	
+	
 	@Override
-	public UserProfile addNewUsers(UserRegistrationRequest addUsers) 
+	public User addNewUsers(UserRegistrationRequest addUsers) 
 	{
 		logger.info("Adding a new user with username: {}", addUsers.getUserName());
 		
 		User user = new User();
 		user.setUserName(addUsers.getUserName());
-		user.setPassword(addUsers.getPassword());
+		user.setPassword(passwordEncoder.encode(addUsers.getPassword()));
         user.setEmail(addUsers.getEmail());
         user.setRole(addUsers.getRole());
         
@@ -59,7 +68,7 @@ public class UserServiceImpl implements UserService{
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
         
-        return new UserProfile(savedUser.getUserId(), savedUser.getUserName(), savedUser.getEmail(), savedUser.getRole(), savedUser.getWallet());
+        return savedUser;
 	}
 
 	@Override
@@ -70,7 +79,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public UserProfile updateUserProfile(int userId, UserProfileUpdateRequest u) {
+	public User updateUserProfile(int userId, UserProfileUpdateRequest u) {
 		
 		logger.info("Updating profile for user with id: {}", userId);
 		
@@ -86,20 +95,20 @@ public class UserServiceImpl implements UserService{
 		User updatedUser = userRepo.save(existingUser);
 		logger.info("User profile updated successfully for userId: {}", userId);
 		
-			return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());
+			return updatedUser;
 		}
 
 	@Override
-	public UserProfile getUserById(int userId) {
+	public User getUserById(int userId) {
 		
 		logger.info("Fetching Profile by id: {}", userId);
 		
 		User userEntity = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
 			
-			logger.debug("Found user with Id: {} and wallet balance: {}", userEntity.getUserId(), userEntity.getWallet());
+		logger.debug("Found user with Id: {} and wallet balance: {}", userEntity.getUserId(), userEntity.getWallet());
 			
-			return new UserProfile(userEntity.getUserId(), userEntity.getUserName(), userEntity.getEmail(), userEntity.getRole(), userEntity.getWallet());
-		}
+		return userEntity;
+	}
 
 	@Override
 	public boolean deleteUser(int userId) {
@@ -122,7 +131,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public UserProfile updateUserWallet(int userId, BigDecimal amount) 
+	public User updateUserWallet(int userId, BigDecimal amount) 
 	{
 		
 		logger.info("Updating Wallet for user with id: {}", userId);
@@ -172,8 +181,18 @@ public class UserServiceImpl implements UserService{
 	    notificationClient.sendEmail(emailRequest);
 	    logger.info("Wallet update Email sent to {}", updatedUser.getEmail());
 		
-		return new UserProfile(updatedUser.getUserId(), updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getRole(), updatedUser.getWallet());
+		return updatedUser;
 
+	}
+
+	@Override
+	public String generateToken(String userName, String role) {
+		return jwtService.generateToken(userName,role);
+	}
+
+	@Override
+	public void validateToken(String token) {
+		jwtService.validateToken(token);
 	}
 
 }

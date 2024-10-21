@@ -13,6 +13,9 @@ import lombok.Setter;
 @Data
 @AllArgsConstructor
 public class PortfolioRequest {
+	public PortfolioRequest() {
+		// TODO Auto-generated constructor stub
+	}
 	private int userId;
     private String assetType;
     private int quantity;

@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.main.dto.BudgetDto;
 import com.main.dto.BudgetReportRequest;
 import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
@@ -37,14 +35,8 @@ public class BudgetServiceImpl implements BudgetService {
     private TransactionService transactionService;
 
     @Override
-    public Budget createBudgetService(BudgetDto budgetDto) {
+    public Budget createBudgetService(Budget budgetDto) {
         logger.info("Creating new budget for user ID: {}", budgetDto.getUserId());
-
-//        if (budgetDto.getAmount() <= 0) {
-//            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
-//            throw new InvalidBudgetException("Budget amount must be positive.");
-//        }
-
         Budget budget = new Budget();
         budget.setUserId(budgetDto.getUserId());
         budget.setAmount(budgetDto.getAmount());
@@ -68,14 +60,8 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Budget updateBudgetService(int budgetId, BudgetDto budgetDto) {
+    public Budget updateBudgetService(int budgetId, Budget budgetDto) {
         logger.info("Updating budget with ID: {}", budgetId);
-
-//        if (budgetDto.getAmount() <= 0) {
-//            logger.error("Invalid budget amount: {}", budgetDto.getAmount());
-//            throw new InvalidBudgetException("Budget amount must be positive.");
-//        }
-
         Budget budget = getBudgetByIdService(budgetId); // Fetch the existing budget
         budget.setAmount(budgetDto.getAmount());
         budget.setCategory(budgetDto.getCategory());
@@ -117,14 +103,51 @@ public class BudgetServiceImpl implements BudgetService {
         return remainingAmount;
     }
 
-	@Override
-	public BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest) {
-		List<Transaction> transactions = transactionService.monthlyExpense(budgetReportRequest);
-		Budget budget = budgetRepository.findByUserId(budgetReportRequest.getUserId());
-		double totalExpenses = transactions.stream().filter(x->x.getTxnType().equalsIgnoreCase("Debited")).map(x->x.getAmount()).mapToDouble(x->x.doubleValue()).sum();
-		BudgetResponse budgetResponse = new BudgetResponse();
-		budgetResponse.setExpense(BigDecimal.valueOf(totalExpenses));
-		budgetResponse.setAmount(budget.getAmount());
-		return budgetResponse;
+//	@Override
+//	public BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest) {
+//		logger.info("Getting budget report: {}",budgetReportRequest);
+//		List<Transaction> transactions = transactionService.monthlyExpense(budgetReportRequest);
+//		Budget budget = budgetRepository.findByUserId(budgetReportRequest.getUserId());
+//		double totalExpenses = transactions.stream().filter(x->x.getTxnType().equalsIgnoreCase("Debited")).map(x->x.getAmount()).mapToDouble(x->x.doubleValue()).sum();
+//		BudgetResponse budgetResponse = new BudgetResponse();
+//		budgetResponse.setExpense(BigDecimal.valueOf(totalExpenses));
+//		budgetResponse.setAmount(budget.getAmount());
+//		return budgetResponse;
+		
+		public BudgetResponse getBudgetReport(BudgetReportRequest budgetReportRequest) {
+	        logger.info("Fetching budget report for user ID: {}", budgetReportRequest.getUserId());
+
+	        // Fetch transactions for the user based on the report request
+	        List<Transaction> transactions = transactionService.monthlyExpense(budgetReportRequest);
+	        if (transactions == null || transactions.isEmpty()) {
+	            logger.warn("No transactions found for user ID: {}", budgetReportRequest.getUserId());
+	        } else {
+	            logger.info("Fetched {} transactions for user ID: {}", transactions.size(), budgetReportRequest.getUserId());
+	        }
+
+	        // Fetch budget for the user
+	        Budget budget = budgetRepository.findByUserId(budgetReportRequest.getUserId());
+	        if (budget == null) {
+	            logger.error("No budget found for user ID: {}", budgetReportRequest.getUserId());
+	            throw new BudgetNotFoundException("Budget not found for user ID: " + budgetReportRequest.getUserId());
+	        }
+
+	        // Calculate total expenses for 'Debited' transactions
+	        double totalExpenses = transactions.stream()
+	            .filter(txn -> txn.getTxnType().equalsIgnoreCase("Debited"))
+	            .map(Transaction::getAmount)
+	            .mapToDouble(BigDecimal::doubleValue)
+	            .sum();
+
+	        logger.info("Total expenses calculated for user ID {}: {}", budgetReportRequest.getUserId(), totalExpenses);
+
+	        // Prepare the response
+	        BudgetResponse budgetResponse = new BudgetResponse();
+	        budgetResponse.setExpense(BigDecimal.valueOf(totalExpenses));
+	        budgetResponse.setAmount(budget.getAmount());
+
+	        logger.info("Budget report generated successfully for user ID: {}", budgetReportRequest.getUserId());
+	        return budgetResponse;
+	    
 	}  
-}
+

@@ -8,10 +8,15 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.main.service.JwtService;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import com.main.client.NotificationClient;
 import com.main.dto.EmailRequest;
 
@@ -43,6 +48,7 @@ public class UserServiceImpl implements UserService{
 	
 	
 	@Override
+	@CircuitBreaker(name = "default", fallbackMethod = "myFallBackMethod")
 	public User addNewUsers(UserRegistrationRequest addUsers) 
 	{
 		logger.info("Adding a new user with username: {}", addUsers.getUserName());
@@ -64,7 +70,11 @@ public class UserServiceImpl implements UserService{
         			+ "\r\n" + "If you have any questions or need assistance, our support team is always ready to help.\r\n"
         			+ "\r\n" + "Best regards,\r\n" + "The FinGuard Team");
         
-        notificationClient.sendEmail(emailrequest);
+        ResponseEntity<Void> response = notificationClient.sendEmail(emailrequest);
+        
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new RuntimeException("Failed to send account creation email");
+        }
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
         
@@ -75,7 +85,12 @@ public class UserServiceImpl implements UserService{
 	public List<User> getAllUsers() 
 	{	
 		logger.info("Fetching all users from the database.");
-		return userRepo.findAll();
+		List<User> allUsers = userRepo.findAll();
+		if(allUsers.isEmpty())
+		{
+			throw new UserNotFoundException("No users found");
+		}
+		return allUsers;
 	}
 
 	@Override
@@ -94,7 +109,6 @@ public class UserServiceImpl implements UserService{
 		// save the updates and return it
 		User updatedUser = userRepo.save(existingUser);
 		logger.info("User profile updated successfully for userId: {}", userId);
-		
 			return updatedUser;
 		}
 
@@ -193,6 +207,14 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void validateToken(String token) {
 		jwtService.validateToken(token);
+	}
+	
+	public User myFallBackMthod(Exception e)
+	{
+		System.out.println("Fallback Method..");
+		User user = new User();
+		user.setUserName("server down");
+		return user;
 	}
 
 }

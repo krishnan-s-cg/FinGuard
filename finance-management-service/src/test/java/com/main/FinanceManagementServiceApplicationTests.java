@@ -1,3 +1,4 @@
+
 package com.main;
 
 import org.junit.jupiter.api.Test;
@@ -157,21 +158,6 @@ class FinanceManagementServiceApplicationTests {
 	        verify(budgetRepository, times(1)).findByUserId(1);
 	    }
 
-//	    @Test
-//	    public void testGetRemainingAmountService_Success() {
-//	        Budget budget = new Budget();
-//	        budget.setUserId(1);
-//	        budget.setAmount(BigDecimal.valueOf(1000));
-//	        budget.setSpentAmount(BigDecimal.valueOf(500));
-//
-//	        when(budgetRepository.findById(1)).thenReturn(Optional.of(budget));
-//
-//	        double remainingAmount = budgetService.getRemainingAmountService(1);
-//	        assertEquals(500, remainingAmount);
-//
-//	        verify(budgetRepository, times(1)).findById(1);
-//	    }
-
 	    @Test
 	    public void testGetRemainingAmountService_SpentExceedsBudget() {
 	        Budget budget = new Budget();
@@ -189,9 +175,3 @@ class FinanceManagementServiceApplicationTests {
 	    }
 
 }
-
-
-
-
-
-

@@ -1,5 +1,8 @@
 package com.main.dto;
 
-public class ReportRequest {
+import lombok.Data;
 
+@Data
+public class ReportRequest {
+private int userId;
 }

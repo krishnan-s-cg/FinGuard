@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.main.service.JwtService;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import com.main.client.NotificationClient;
 import com.main.dto.EmailRequest;
 
@@ -45,6 +48,7 @@ public class UserServiceImpl implements UserService{
 	
 	
 	@Override
+	@CircuitBreaker(name = "default", fallbackMethod = "myFallBackMethod")
 	public User addNewUsers(UserRegistrationRequest addUsers) 
 	{
 		logger.info("Adding a new user with username: {}", addUsers.getUserName());
@@ -203,6 +207,14 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void validateToken(String token) {
 		jwtService.validateToken(token);
+	}
+	
+	public User myFallBackMthod(Exception e)
+	{
+		System.out.println("Fallback Method..");
+		User user = new User();
+		user.setUserName("server down");
+		return user;
 	}
 
 }

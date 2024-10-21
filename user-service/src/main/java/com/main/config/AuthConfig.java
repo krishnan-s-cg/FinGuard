@@ -25,10 +25,12 @@ public class AuthConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().and().csrf().disable()
+        return http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/finguard/user/register", "/finguard/user/login", "/finguard/validate",
-                		"/swagger-ui/**","/v3/api-docs/**").permitAll()
+                    "/swagger-ui/**","/v3/api-docs/**").permitAll()
+                .requestMatchers("/finguard/users").hasAnyRole("user", "admin") // Adjust roles as needed
+                .anyRequest().authenticated()
                 .and()
                 .build();
     }

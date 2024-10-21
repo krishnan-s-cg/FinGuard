@@ -37,32 +37,17 @@ public class BudgetController {
 	    // Create a new budget
 	    @PostMapping
 	    public ResponseEntity<Budget> createBudget(@RequestBody BudgetDto budgetDto) {
-//	        Budget createdBudget = budgetService.createBudgetService(budgetDto);
-//	        return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
 
 	             Budget createdBudget = budgetService.createBudgetService(budgetDto);
 	            return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
 	     
-	    }
+	    } 
 
 	    // Get a budget by ID
 	    @GetMapping("/{budgetId}")
 	    public ResponseEntity<Budget> getBudgetById(@PathVariable int budgetId) {
 	        Budget budget = budgetService.getBudgetByIdService(budgetId);
 	        return new ResponseEntity<>(budget, HttpStatus.OK);
-//	    	 if (budgetId <= 0) {
-//	             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	         }
-//
-//	         try {
-//	             Budget budget = budgetService.getBudgetByIdService(budgetId);
-//	             if (budget == null) {
-//	                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	             }
-//	             return new ResponseEntity<>(budget, HttpStatus.OK);
-//	         } catch (Exception e) {
-//	             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	         }
 	    }
 
 	    // Update a budget
@@ -70,27 +55,6 @@ public class BudgetController {
 	    public ResponseEntity<Budget> updateBudget(@PathVariable int budgetId, @RequestBody BudgetDto budgetDto) {
 	        Budget updatedBudget = budgetService.updateBudgetService(budgetId, budgetDto);
 	        return new ResponseEntity<>(updatedBudget, HttpStatus.OK);
-	    	 // Validate input
-//	        if (budgetId <=0 || budgetDto == null || budgetDto.getAmount() <= 0) {
-//	            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	        }
-//
-//	        // Validate user existence by calling UserClient
-//	        try {
-//	            userClient.getUserById(budgetDto.getUserId()); // This will throw an exception if user is not found
-//	        } catch (Exception e) {
-//	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	        }
-//
-//	        // Proceed with budget update
-//	        try {
-//	            Budget updatedBudget = budgetService.updateBudgetService(budgetId, budgetDto);
-//	            return new ResponseEntity<>(updatedBudget, HttpStatus.OK);
-//	        } catch (RuntimeException e) {
-//	            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
-//	        } catch (Exception e) {
-//	            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	        }
 	    }
 
 	    // Delete a budget
@@ -98,19 +62,6 @@ public class BudgetController {
 	    public ResponseEntity<Void> deleteBudget(@PathVariable int budgetId) {
 	        budgetService.deleteBudgetService(budgetId);
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//	    	   if (budgetId <= 0) {
-//	               return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//	           }
-//
-//	           try {
-//	               boolean isDeleted = budgetService.deleteBudgetService(budgetId);
-//	               if (!isDeleted) {
-//	                   return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	               }
-//	               return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//	           } catch (Exception e) {
-//	               return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	           }
 	    }
 
 	    // Get all budgets for a user
@@ -118,28 +69,6 @@ public class BudgetController {
 	    public ResponseEntity<Budget> getUserBudgets(@PathVariable int  userId) {
 	        Budget budgets = budgetService.getUserBudgetsService(userId);
 	        return new ResponseEntity<>(budgets, HttpStatus.OK);
-//	    	
-//	    	 if (userId <= 0) {
-//	             return new ResponseEntity(HttpStatus.BAD_REQUEST);
-//	         }
-//
-//	         // Validate user existence by calling UserClient
-//	         try {
-//	             userClient.getUserById(userId); // This will throw an exception if user is not found
-//	         } catch (Exception e) {
-//	             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	         }
-//
-//	         // Proceed with fetching user budgets
-//	         try {
-//	             List<Budget> budgets = budgetService.getUserBudgetsService(userId);
-//	             if (budgets.isEmpty()) {
-//	                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//	             }
-//	             return new ResponseEntity<>(budgets, HttpStatus.OK);
-//	         } catch (Exception e) {
-//	             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	         }
 	    }
 	    @GetMapping("/{budgetId}/remaining")
 	    public ResponseEntity<BigDecimal> getRemainingAmount(@PathVariable int budgetId) {

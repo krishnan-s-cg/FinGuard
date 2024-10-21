@@ -35,7 +35,7 @@ public class BudgetServiceImpl implements BudgetService {
     private TransactionService transactionService;
 
     @Override
-    public Budget createBudgetService(Budget budgetDto) {
+    public Budget createBudgetService(Budget budgetDto) { 
         logger.info("Creating new budget for user ID: {}", budgetDto.getUserId());
         Budget budget = new Budget();
         budget.setUserId(budgetDto.getUserId());
@@ -149,5 +149,6 @@ public class BudgetServiceImpl implements BudgetService {
 	        logger.info("Budget report generated successfully for user ID: {}", budgetReportRequest.getUserId());
 	        return budgetResponse;
 	    
-	}  
+	}
+}
 

@@ -8,7 +8,7 @@ import com.main.service.InvestmentCalculator;
 @SpringBootApplication
 @EnableFeignClients
 public class InvestmentAnalyticsServiceApplication {
-
+ 
     public static void main(String[] args) {
         SpringApplication.run(InvestmentAnalyticsServiceApplication.class, args);
         

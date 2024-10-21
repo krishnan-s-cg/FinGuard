@@ -16,16 +16,10 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-<<<<<<< HEAD
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
-=======
->>>>>>> 58ac945adee44667023256eb55920856a70d675c
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -18,31 +18,23 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Budget {
 	@Id
 	@GeneratedValue
 	private int budgetId;
-	@NotNull(message="user ID cannot be null")
 	private int userId;
-	@NotNull(message="Catagory cannot be null")
 	private String category;
-	@NotNull(message="Amount cannot be null")
-//	@Positive(message ="Amount must be a posistive number")
-	@PositiveOrZero
-	@Digits(integer = 6, fraction = 2)
 	private BigDecimal amount;
-//	@NotNull(message="Amount cannot be null")
-//	@Positive(message ="Amount must be a posistive number")
-	@PositiveOrZero
-	@Digits(integer = 6, fraction = 2)
 	private BigDecimal spentAmount = BigDecimal.ZERO;
-	@NotNull(message="Start date cannot be null")
 	private LocalDate startDate;
-	@NotNull(message=" End date cannot be null")
 	private LocalDate endDate;
 	@CreationTimestamp
 	private LocalDate createdAt;

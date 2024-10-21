@@ -48,6 +48,7 @@ public class BudgetServiceImpl implements BudgetService {
         Budget budget = new Budget();
         budget.setUserId(budgetDto.getUserId());
         budget.setAmount(budgetDto.getAmount());
+        budget.setSpentAmount(budgetDto.getSpentAmount());
         budget.setCategory(budgetDto.getCategory());
         budget.setStartDate(budgetDto.getStartDate());
         budget.setEndDate(budgetDto.getEndDate());
@@ -127,3 +128,7 @@ public class BudgetServiceImpl implements BudgetService {
 		return budgetResponse;
 	}  
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> 17cad5cf84f9f65020aab699eae01d8121fb199d

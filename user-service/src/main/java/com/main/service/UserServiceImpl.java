@@ -23,6 +23,8 @@ import com.main.dto.EmailRequest;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
+import com.main.exception.InvalidRequestException;
+import com.main.exception.NotificationServiceException;
 import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService{
 	
 	
 	@Override
-	@CircuitBreaker(name = "default", fallbackMethod = "myFallBackMethod")
+	@CircuitBreaker(name = "notificationServiceCircuitBreaker", fallbackMethod = "myFallBackMethod")
 	public User addNewUsers(UserRegistrationRequest addUsers) 
 	{
 		logger.info("Adding a new user with username: {}", addUsers.getUserName());
@@ -73,7 +75,8 @@ public class UserServiceImpl implements UserService{
         ResponseEntity<Void> response = notificationClient.sendEmail(emailrequest);
         
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("Failed to send account creation email");
+            logger.error("Failed to send account creation email to {}", savedUser.getEmail());
+            throw new NotificationServiceException("Failed to send account creation email to " + savedUser.getEmail());
         }
         
         logger.info("Account Creation email sent to {}", savedUser.getEmail());
@@ -99,7 +102,8 @@ public class UserServiceImpl implements UserService{
 		logger.info("Updating profile for user with id: {}", userId);
 		
 		// first checking is user present
-		User existingUser = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
+		User existingUser = userRepo.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
 		
 		existingUser.setUserName(u.getUserName());
 		existingUser.setEmail(u.getEmail());
@@ -114,14 +118,20 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User getUserById(int userId) {
-		
-		logger.info("Fetching Profile by id: {}", userId);
-		
-		User userEntity = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
-			
-		logger.debug("Found user with Id: {} and wallet balance: {}", userEntity.getUserId(), userEntity.getWallet());
-			
-		return userEntity;
+	    logger.info("Fetching Profile by id: {}", userId);
+	    
+	    // Negative flow for null or negative ID
+	    if (userId <= 0) {
+	        logger.error("Invalid user ID: {}", userId);
+	        throw new IllegalArgumentException("User ID must be a positive integer.");
+	    }
+	    
+	    User userEntity = userRepo.findById(userId)
+	        .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND_MSG + userId));
+	    
+	    logger.debug("Found user with Id: {} and wallet balance: {}", userEntity.getUserId(), userEntity.getWallet());
+	    
+	    return userEntity;
 	}
 
 	@Override
@@ -145,6 +155,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	@CircuitBreaker(name = "notificationServiceCircuitBreaker", fallbackMethod = "myFallBackMethod")
 	public User updateUserWallet(int userId, BigDecimal amount) 
 	{
 		
@@ -201,20 +212,40 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public String generateToken(String userName, String role) {
-		return jwtService.generateToken(userName,role);
+		// Validate inputs for null or empty values
+	    if (userName == null || userName.trim().isEmpty()) {
+	        throw new InvalidRequestException("Username cannot be null or empty");
+	    }
+	    if (role == null || role.trim().isEmpty()) {
+	        throw new InvalidRequestException("Role cannot be null or empty");
+	    }
+	    return jwtService.generateToken(userName, role);
 	}
 
 	@Override
 	public void validateToken(String token) {
-		jwtService.validateToken(token);
+		// Check if the token is null or empty
+	    if (token == null || token.trim().isEmpty()) {
+	        throw new InvalidRequestException("Token cannot be null or empty");
+	    }
+	    // Call the JWT service to validate the token
+	    try {
+	        jwtService.validateToken(token);
+	    } catch (InvalidRequestException e) {
+	        throw new InvalidRequestException("Invalid token provided: " + e.getMessage());
+	    }
 	}
 	
-	public User myFallBackMthod(Exception e)
-	{
-		System.out.println("Fallback Method..");
-		User user = new User();
-		user.setUserName("server down");
-		return user;
+	public User myFallBackMethod(UserRegistrationRequest addUsers, Throwable throwable) {
+	    logger.error("Notification service is unavailable. Falling back. Error: {}", throwable.getMessage());
+	    // You can still save the user without sending the email, for example
+	    User user = new User();
+	    user.setUserName(addUsers.getUserName());
+	    user.setPassword(passwordEncoder.encode(addUsers.getPassword()));
+	    user.setEmail(addUsers.getEmail());
+	    user.setRole(addUsers.getRole());
+	    
+	    return userRepo.save(user);
 	}
 
 }

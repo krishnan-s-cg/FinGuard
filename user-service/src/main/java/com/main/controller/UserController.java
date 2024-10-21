@@ -3,7 +3,8 @@ package com.main.controller;
 
 import java.util.List;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,18 +29,19 @@ import com.main.dto.UpdateWallet;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
+import com.main.exception.InvalidRequestException;
+import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 import com.main.service.UserService;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/finguard")
 //@Api(value = "User Service", tags = {"User Management"})
 public class UserController { 
-	
+	 private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+	 
 	@Autowired
 	private UserService userservice;
 	
@@ -54,8 +56,14 @@ public class UserController {
 	@PostMapping("/user/register")
 	public ResponseEntity<User> registerUsers(@RequestBody @Valid UserRegistrationRequest request)
 	{
-		User newUser = userservice.addNewUsers(request);
-		return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+		 logger.info("Registering new user with username: {}", request.getUserName());
+	        try {
+	            User newUser = userservice.addNewUsers(request);
+	            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+	        } catch (Exception e) {
+	            logger.error("Failed to register user: {}", e.getMessage());
+	            throw new InvalidRequestException("User registration failed. Please check the details and try again.");
+	        }
 	}
 	
 	// Login for existing user
@@ -63,34 +71,33 @@ public class UserController {
 	@PostMapping("/user/login")
     public ResponseDto getToken(@RequestBody AuthRequest authRequest) 
 	{
-    	System.out.println("yes .."+authRequest.getUserName()+"  "+authRequest.getPassword());
-    	
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
-        
-        System.out.println(authenticate.isAuthenticated());
-        
-        if (authenticate.isAuthenticated()) 
-        {
-        	User user= userRepo.findByUserName(authRequest.getUserName()).get();
-        	String token=
-        	//service.generateToken(authRequest.getUsername(),user.getRole());
-        			userservice.generateToken(user.getUserId()+"",user.getRole());
-        	
-        	ResponseDto resDto=new ResponseDto();
-        	resDto.setToken(token);
-        	resDto.setRole(user.getRole());
-        	return resDto;
-        } else {
-            throw new RuntimeException("invalid access");
+		logger.info("Attempting to log in user: {}", authRequest.getUserName());
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+            if (authenticate.isAuthenticated()) {
+                User user = userRepo.findByUserName(authRequest.getUserName()).orElseThrow(() -> new UserNotFoundException("User not found with username: " + authRequest.getUserName()));
+                String token = userservice.generateToken(user.getUserId() + "", user.getRole());
+                ResponseDto resDto = new ResponseDto();
+                resDto.setToken(token);
+                resDto.setRole(user.getRole());
+                logger.info("User logged in successfully: {}", authRequest.getUserName());
+                return resDto;
+            } else {
+                throw new InvalidRequestException("Invalid login credentials");
+            }
+        } catch (Exception e) {
+            logger.error("Login failed: {}", e.getMessage());
+            throw new InvalidRequestException("Login failed. Please check your credentials.");
         }
     }
 	
 	// Checking the token is valid
 //	@ApiOperation(value = "Validate JWT token")
 	@GetMapping("/validate")
-    public String validateToken(@RequestParam("token") String token) {
+    public ResponseEntity<String> validateToken(@RequestParam("token") String token) {
+		logger.info("Token validation attempt");
         userservice.validateToken(token);
-        return "Token is valid";
+        return new ResponseEntity<String>("Token is valid", HttpStatus.OK);
     }
 	
 	// Getting All Users
@@ -98,43 +105,71 @@ public class UserController {
 	@GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() 
 	{
+		logger.info("Fetching all users.");
         List<User> users = userservice.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK); 
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found.");
+        }
+        logger.info("Found {} users.", users.size());
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     // Get a user by ID 
 //	@ApiOperation(value = "Get user details by ID", response = User.class)
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable int userId) 
-    {
-    	User userById = userservice.getUserById(userId);
-        return new ResponseEntity<>(userById, HttpStatus.OK);
-    }
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<Object> getUserById(@PathVariable int userId) {
+	    logger.info("Fetching user by ID: {}", userId);
+	    User userById = userservice.getUserById(userId);
+	    
+	    if (userById == null) {
+	        logger.error("User with ID {} not found", userId);
+	        throw new UserNotFoundException("User with ID " + userId + " not found.");
+	    }
+	    
+	    return new ResponseEntity<>(userById, HttpStatus.OK);
+	}
 
     // Update a user by ID 
 //	@ApiOperation(value = "Update user details", response = User.class)
-    @PutMapping("/user/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) 
-    {
-    	User updatedUser = userservice.updateUserProfile(userId, request);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
-    }
+	@PutMapping("/user/{userId}")
+	public ResponseEntity<Object> updateUser(@PathVariable int userId, @RequestBody UserProfileUpdateRequest request) {
+	    logger.info("Updating user with ID: {}", userId);
+	    User updatedUser = userservice.updateUserProfile(userId, request);
+
+	    if (updatedUser == null) {
+	        logger.error("User with ID {} not found, cannot update", userId);
+	        throw new UserNotFoundException("User with ID " + userId + " not found.");
+	    }
+	    return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+	}
     
     // Update Users Wallet after he Logins
 //	@ApiOperation(value = "Update user wallet balance", response = User.class)
-    @PutMapping("/user/wallet/{userId}")
-    public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) 
-    {
-    	User updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK); // UserNotFoundException handled globally
-    }
+	@PutMapping("/user/wallet/{userId}")
+	public ResponseEntity<Object> updateUserWallet(@PathVariable int userId, @RequestBody UpdateWallet walletUpdateRequest) {
+	    logger.info("Updating wallet for user with ID: {}", userId);
+	    User updatedUser = userservice.updateUserWallet(userId, walletUpdateRequest.getAmount());
+
+	    if (updatedUser == null) {
+	        logger.error("User with ID {} not found, cannot update wallet", userId);
+	        throw new UserNotFoundException("User with ID " + userId + " not found.");
+	    }
+
+	    return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+	}
 
     // Delete a user by ID
 //	@ApiOperation(value = "Delete a user by ID")
-    @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable int userId) 
-    {
-    	userservice.deleteUser(userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // UserNotFoundException handled globally
-    }
+	@DeleteMapping("/user/{userId}")
+	public ResponseEntity<Object> deleteUser(@PathVariable int userId) {
+	    logger.info("Deleting user with ID: {}", userId);
+	    
+	    boolean deleted = userservice.deleteUser(userId);
+	    if (!deleted) {
+	        logger.error("User with ID {} not found, cannot delete", userId);
+	        throw new UserNotFoundException("User with ID " + userId + " not found.");
+	    }
+
+	    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
 }

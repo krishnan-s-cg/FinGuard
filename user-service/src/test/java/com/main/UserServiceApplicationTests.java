@@ -22,13 +22,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,6 @@ import com.main.dto.EmailRequest;
 import com.main.dto.UserProfileUpdateRequest;
 import com.main.dto.UserRegistrationRequest;
 import com.main.entity.User;
-import com.main.exception.ErrorResponse;
 import com.main.exception.UserNotFoundException;
 import com.main.repository.UserRepository;
 import com.main.service.JwtService;
@@ -128,7 +127,7 @@ class UserServiceApplicationTests {
         });
 
         // Assert
-        assertEquals("Failed to send account creation email", exception.getMessage());
+        assertEquals("Failed to send account creation email to test@example.com", exception.getMessage());
         Mockito.verify(userRepo, Mockito.times(1)).save(Mockito.any(User.class));
         Mockito.verify(notificationClient, Mockito.times(1)).sendEmail(Mockito.any(EmailRequest.class));
     }

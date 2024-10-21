@@ -1,4 +1,4 @@
-package com.main.dto;
+package com.main.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionRequest {
-	private int senderUserId;
-	private int receiverUserId;
-	private double amount;
+public class ErrorResponse {
+	 private String message;
+	    private int status;
 }

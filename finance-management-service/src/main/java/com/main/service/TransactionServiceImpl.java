@@ -51,7 +51,6 @@ public class TransactionServiceImpl implements TransactionService {
     
     @Override
 	public Transaction createTransaction(Transaction transaction) {
-		
 		return transactionRepository.save(transaction);
 	}
 
@@ -123,14 +122,32 @@ public class TransactionServiceImpl implements TransactionService {
         EmailResponse emailResponseSender = new EmailResponse();
         emailResponseSender.setToEmail(sender.getEmail());
         emailResponseSender.setSubject("Transaction Successful!");
-        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account. Balance: %.2f", txn.getAmount(), sender.getWallet()));
-        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        emailResponseSender.setMessage(
+        	    String.format(
+        	        "Dear %s, %n%nYou have successfully transferred an amount of $%.2f to %s. "
+        	        + "Your updated account balance is $%.2f.%n%nThank you for using FinGuard "
+        	        + "for your financial management.%n%nBest regards, %nThe FinGuard Team",
+        	        sender.getUserName(),
+        	        txn.getAmount(),
+        	        receiver.getUserName(),
+        	        sender.getWallet()
+        	    )
+        	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         EmailResponse emailResponseReceiver = new EmailResponse();
         emailResponseReceiver.setToEmail(receiver.getEmail());
         emailResponseReceiver.setSubject("Transaction Successful!");
-        emailResponseReceiver.setMessage(String.format("An amount of %.2f has been credited from your account. Balance: %.2f", txn.getAmount(), receiver.getWallet()));
-        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
+        emailResponseReceiver.setMessage(
+        	    String.format(
+        	        "Dear %s, %n%nYou have successfully received an amount of $%.2f from %s. "
+        	        + "Your updated account balance is $%.2f.%n%nThank you for using FinGuard for your "
+        	        + "financial management.%n%nBest regards, %nThe FinGuard Team",
+        	        receiver.getUserName(),
+        	        txn.getAmount(),
+        	        sender.getUserName(),
+        	        receiver.getWallet()
+        	    )
+        	);        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
         
         logger.info("Transaction completed successfully from user ID: {} to user ID: {} with amount: {}", txn.getSenderUserId(), txn.getReceiverUserId(), txn.getAmount());
         return "Transaction successful!!";
@@ -171,7 +188,11 @@ public class TransactionServiceImpl implements TransactionService {
         EmailResponse emailResponseSender = new EmailResponse();
         emailResponseSender.setToEmail(user.getEmail());
         emailResponseSender.setSubject("Debt Transaction Successful!");
-        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account on your loanId %d. Balance: %.2f", txn.getAmount(), debtTxn.getLoanId(), user.getWallet()));
+        emailResponseSender.setMessage(     String.format(       
+        		"Dear %s, %n%nAn amount of $%.2f has been debited from your account for loan ID: %d. "
+        		+ "Your updated account balance is $%.2f.%n%nPlease ensure to keep track of your loan "
+        		+ "payments to avoid any penalties. %n%nThank you for choosing FinGuard for your financial needs.%n%nBest regards, %nThe FinGuard Team"
+        		, user.getUserName(), txn.getAmount(), debtTxn.getLoanId(), user.getWallet() ) );        
         notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Debt transaction completed successfully for Loan ID: {}", debtTxn.getLoanId());
@@ -211,8 +232,16 @@ public class TransactionServiceImpl implements TransactionService {
         EmailResponse emailResponseSender = new EmailResponse();
         emailResponseSender.setToEmail(user.getEmail());
         emailResponseSender.setSubject("Investment Transaction Successful!");
-        emailResponseSender.setMessage(String.format("An amount of %.2f has been debited from your account. Balance: %.2f", portfolioDto.getPurchasePrice(), user.getWallet()));
-        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        emailResponseSender.setMessage(
+        	    String.format(
+        	        "Dear %s, %n%nAn amount of $%.2f has been successfully debited from your account for your mutual fund investment. "
+        	        + "Your updated account balance is $%.2f.%n%nWe appreciate your trust in FinGuard for managing your investments. "
+        	        + "%n%nBest regards, %nThe FinGuard Team",
+        	        user.getUserName(),
+        	        portfolioDto.getPurchasePrice(),
+        	        user.getWallet()
+        	    )
+        	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Transaction record created for user ID {}. Transaction amount: {}", portfolioDto.getUserId(), portfolioDto.getPurchasePrice());
 

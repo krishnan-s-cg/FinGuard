@@ -28,7 +28,7 @@ public class AuthConfig {
         return http.csrf().and().csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/finguard/user/register", "/finguard/user/login", "/finguard/validate",
-                		"/swagger-ui/**","/v3/api-docs/**").permitAll()
+                		"/swagger-ui/**","/v3/api-docs/**","/finguard/user/wallet/**").permitAll()
                 .and()
                 .build();
     }

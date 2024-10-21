@@ -2,6 +2,8 @@ package com.main.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import com.main.dto.TransactionRequest;
 import com.main.entity.Transaction;
 import com.main.service.TransactionService;
 
+
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {
@@ -22,7 +25,7 @@ public class TransactionController {
     private TransactionService transactionService; 
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
+    public ResponseEntity<Transaction> createTransaction(@RequestBody @Valid Transaction transaction) {
         Transaction createdTransaction = transactionService.createTransaction(transaction);
         return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
     }
@@ -65,19 +68,19 @@ public class TransactionController {
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
     @PostMapping("/user/txn")
-    public ResponseEntity<String> makeTransaction(@RequestBody TransactionRequest txn) {
+    public ResponseEntity<String> makeTransaction(@RequestBody @Valid TransactionRequest txn) {
     	String msg = transactionService.makeTransaction(txn);
     	return new ResponseEntity<>(msg, HttpStatus.OK);
     }
     
     @PostMapping("/user/portfolio")
-    public ResponseEntity<Void> portfolioTransaction(@RequestBody PortfolioDto portfolioDto){
+    public ResponseEntity<Void> portfolioTransaction(@RequestBody @Valid PortfolioDto portfolioDto){
     	transactionService.portfolioTransaction(portfolioDto);
     	return new ResponseEntity<>(HttpStatus.OK);
     }
     
     @PostMapping("/user/debt")
-    public ResponseEntity<Void> debtTransaction(@RequestBody DebtTxn debtTxn){
+    public ResponseEntity<Void> debtTransaction(@RequestBody @Valid DebtTxn debtTxn){
     	transactionService.debtTransaction(debtTxn);
     	return new ResponseEntity<>(HttpStatus.OK);
     }

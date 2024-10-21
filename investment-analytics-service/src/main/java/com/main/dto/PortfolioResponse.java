@@ -1,6 +1,10 @@
 package com.main.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
+
+import org.springframework.cglib.core.Local;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +17,9 @@ public class PortfolioResponse {
     private int userId;
     private String assetType;
     private int quantity;
-    private double purchasePrice;
-    private double currentPrice;
-    private Date purchaseDate;
-    private Date createdAt;
-    private Date updatedAt;
+    private BigDecimal purchasePrice;
+    private BigDecimal currentPrice;
+    private LocalDate purchaseDate;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
 }

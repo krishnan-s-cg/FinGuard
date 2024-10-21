@@ -37,11 +37,9 @@ public class BudgetController {
 	    // Create a new budget
 	    @PostMapping
 	    public ResponseEntity<Budget> createBudget(@RequestBody BudgetDto budgetDto) {
-
 	             Budget createdBudget = budgetService.createBudgetService(budgetDto);
 	            return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
-	     
-	    } 
+	    }
 
 	    // Get a budget by ID
 	    @GetMapping("/{budgetId}")
@@ -63,7 +61,7 @@ public class BudgetController {
 	        budgetService.deleteBudgetService(budgetId);
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    }
-
+ 
 	    // Get all budgets for a user
 	    @GetMapping("/user/{userId}")
 	    public ResponseEntity<Budget> getUserBudgets(@PathVariable int  userId) {

@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.main.dto.BudgetDto;
 import com.main.dto.BudgetReportRequest;
 import com.main.dto.BudgetResponse;
 import com.main.entity.Budget;
 import com.main.proxy.UserClient;
 import com.main.service.BudgetService;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Path;
 
 //@Controller + @ResponseBody   handles HTTP requests in a RESTful web service, such as GET, POST, PUT, DELETE, etc.,
@@ -36,7 +36,7 @@ public class BudgetController {
 	    private BudgetService budgetService;
 	    // Create a new budget
 	    @PostMapping
-	    public ResponseEntity<Budget> createBudget(@RequestBody BudgetDto budgetDto) {
+	    public ResponseEntity<Budget> createBudget(@Valid  @RequestBody Budget budgetDto) {
 	             Budget createdBudget = budgetService.createBudgetService(budgetDto);
 	            return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
 	    }
@@ -50,7 +50,7 @@ public class BudgetController {
 
 	    // Update a budget
 	    @PutMapping("/{budgetId}")
-	    public ResponseEntity<Budget> updateBudget(@PathVariable int budgetId, @RequestBody BudgetDto budgetDto) {
+	    public ResponseEntity<Budget> updateBudget(@PathVariable int budgetId, @RequestBody Budget budgetDto) {
 	        Budget updatedBudget = budgetService.updateBudgetService(budgetId, budgetDto);
 	        return new ResponseEntity<>(updatedBudget, HttpStatus.OK);
 	    }

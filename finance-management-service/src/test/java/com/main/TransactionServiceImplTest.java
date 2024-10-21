@@ -110,7 +110,7 @@ public class TransactionServiceImplTest {
         
         Exception exception = assertThrows(TransactionNotFoundException.class, () -> {
             transactionService.getTransactionsByUserId(1);
-        });
+        }); 
         
         assertEquals("Transaction not found for the userId: 1", exception.getMessage());
         verify(transactionRepository).findByUserId(1);
@@ -121,7 +121,7 @@ public class TransactionServiceImplTest {
         TransactionRequest request = new TransactionRequest();
         request.setSenderUserId(1);
         request.setReceiverUserId(2);
-        request.setAmount(100);
+        request.setAmount(BigDecimal.valueOf(100));
 
         when(sender.getUserId()).thenReturn(1);
         when(sender.getWallet()).thenReturn(BigDecimal.valueOf(200));
@@ -143,7 +143,7 @@ public class TransactionServiceImplTest {
         TransactionRequest request = new TransactionRequest();
         request.setSenderUserId(1);
         request.setReceiverUserId(2);
-        request.setAmount(300);
+        request.setAmount(BigDecimal.valueOf(300));
 
         when(sender.getUserId()).thenReturn(1);
         when(sender.getWallet()).thenReturn(BigDecimal.valueOf(200));

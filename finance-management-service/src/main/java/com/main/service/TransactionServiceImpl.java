@@ -86,25 +86,25 @@ public class TransactionServiceImpl implements TransactionService {
         }
         
         User sender = userClient.getUserById(txn.getSenderUserId());
-        if (sender == null) {
+        if (sender == null) { 
             logger.error("Sender user with ID {} not found", txn.getSenderUserId());
             throw new UserNotFoundException("Sender user not found");
-        }
+        } 
         
-        BigDecimal amountBigDecimal = BigDecimal.valueOf(txn.getAmount());
+//        BigDecimal amountBigDecimal = BigDecimal.valueOf(txn.getAmount());
         
-        if (sender.getWallet().compareTo(amountBigDecimal) < 0) {
+        if (sender.getWallet().compareTo(txn.getAmount()) < 0) {
             logger.error("Insufficient balance for user ID {}", txn.getSenderUserId());
             throw new InsufficientBalanceException("Insufficient Balance");
         }
         
-        receiver.setWallet(receiver.getWallet().add(amountBigDecimal));
-        sender.setWallet(sender.getWallet().subtract(amountBigDecimal));
+        receiver.setWallet(receiver.getWallet().add(txn.getAmount()));
+        sender.setWallet(sender.getWallet().subtract(txn.getAmount()));
         
         userClient.updateUser(txn.getReceiverUserId(), receiver);
         Transaction receiverTxn = new Transaction();
         receiverTxn.setUserId(txn.getReceiverUserId());
-        receiverTxn.setAmount(amountBigDecimal);
+        receiverTxn.setAmount(txn.getAmount());
         receiverTxn.setTxnType("Credited");
         receiverTxn.setWallet(receiver.getWallet());
         logger.info("receiver txn: {}", receiverTxn); 
@@ -113,7 +113,7 @@ public class TransactionServiceImpl implements TransactionService {
         userClient.updateUser(txn.getSenderUserId(), sender);
         Transaction senderTxn = new Transaction();
         senderTxn.setUserId(txn.getSenderUserId());
-        senderTxn.setAmount(amountBigDecimal);
+        senderTxn.setAmount(txn.getAmount());
         senderTxn.setTxnType("Debited");
         senderTxn.setWallet(sender.getWallet());
         logger.info("sender txn: {}", senderTxn);
@@ -132,7 +132,9 @@ public class TransactionServiceImpl implements TransactionService {
         	        receiver.getUserName(),
         	        sender.getWallet()
         	    )
-        	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        	);        
+        
+//        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         EmailResponse emailResponseReceiver = new EmailResponse();
         emailResponseReceiver.setToEmail(receiver.getEmail());
@@ -147,7 +149,9 @@ public class TransactionServiceImpl implements TransactionService {
         	        sender.getUserName(),
         	        receiver.getWallet()
         	    )
-        	);        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
+        	);        
+        
+//        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
         
         logger.info("Transaction completed successfully from user ID: {} to user ID: {} with amount: {}", txn.getSenderUserId(), txn.getReceiverUserId(), txn.getAmount());
         return "Transaction successful!!";
@@ -244,7 +248,7 @@ public class TransactionServiceImpl implements TransactionService {
         	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Transaction record created for user ID {}. Transaction amount: {}", portfolioDto.getUserId(), portfolioDto.getPurchasePrice());
-
+        
         logger.info("Portfolio transaction completed successfully for user ID: {}", portfolioDto.getUserId());
     }
 

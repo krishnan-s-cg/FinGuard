@@ -1,4 +1,4 @@
-package com.cg.config;
+package com.main.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +27,8 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().and().csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/register", "/auth/login", "/auth/validate",
-                		"/swagger-ui/**","/v3/api-docs/**").permitAll()
+                .requestMatchers("/finguard/user/register", "/finguard/user/login", "/finguard/validate",
+                		"/swagger-ui/**","/v3/api-docs/**","/finguard/user/wallet/**").permitAll()
                 .and()
                 .build();
     }

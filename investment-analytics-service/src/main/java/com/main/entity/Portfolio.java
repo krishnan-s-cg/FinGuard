@@ -24,21 +24,14 @@ public class Portfolio {
 	@Id
 	@GeneratedValue
 	private int investmentId;
-    @NotNull(message = "User  ID cannot be null")
-	private int userId;
-    @NotBlank(message = "Asset type cannot be blank")
-	private String assetType;
-    @Min(value = 0, message = "Quantity must be non-negative")
-	private int quantity;
-    @Min(value = 0, message = "Purchase price must be non-negative")
-	private BigDecimal purchasePrice;
-    @Min(value = 0, message = "Current price must be non-negative")
-	private BigDecimal currentPrice;
-    @CreationTimestamp
-	private LocalDate purchaseDate;
-	@CreationTimestamp
+   
+	private int userId;  
+	private String assetType;  
+	private int quantity;   
+	private BigDecimal purchasePrice;   
+	private BigDecimal currentPrice;    
+	private LocalDate purchaseDate;	
 	private LocalDate createdAt;
-	@UpdateTimestamp
 	private LocalDate updatedAt;
 
 }

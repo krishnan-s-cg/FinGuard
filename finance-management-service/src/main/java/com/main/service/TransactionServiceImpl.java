@@ -41,7 +41,7 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private UserClient userClient;
+    private UserClient userClient; 
     
     @Autowired
     private DebtService debtService;

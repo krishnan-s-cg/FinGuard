@@ -32,12 +32,8 @@ public class BudgetController {
 	    // Create a new budget
 	    @PostMapping
 	    public ResponseEntity<Budget> createBudget(@RequestBody BudgetDto budgetDto) {
-//	        Budget createdBudget = budgetService.createBudgetService(budgetDto);
-//	        return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
-
 	             Budget createdBudget = budgetService.createBudgetService(budgetDto);
 	            return new ResponseEntity<>(createdBudget, HttpStatus.CREATED);
-	     
 	    }
 
 	    // Get a budget by ID

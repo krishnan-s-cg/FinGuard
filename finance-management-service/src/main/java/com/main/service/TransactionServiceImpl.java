@@ -132,7 +132,9 @@ public class TransactionServiceImpl implements TransactionService {
         	        receiver.getUserName(),
         	        sender.getWallet()
         	    )
-        	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
+        	);        
+        
+//        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         EmailResponse emailResponseReceiver = new EmailResponse();
         emailResponseReceiver.setToEmail(receiver.getEmail());
@@ -147,7 +149,9 @@ public class TransactionServiceImpl implements TransactionService {
         	        sender.getUserName(),
         	        receiver.getWallet()
         	    )
-        	);        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
+        	);        
+        
+//        notificationClient.sendWalletUpdateEmail(emailResponseReceiver);
         
         logger.info("Transaction completed successfully from user ID: {} to user ID: {} with amount: {}", txn.getSenderUserId(), txn.getReceiverUserId(), txn.getAmount());
         return "Transaction successful!!";
@@ -244,7 +248,7 @@ public class TransactionServiceImpl implements TransactionService {
         	);        notificationClient.sendWalletUpdateEmail(emailResponseSender);
         
         logger.info("Transaction record created for user ID {}. Transaction amount: {}", portfolioDto.getUserId(), portfolioDto.getPurchasePrice());
-
+        
         logger.info("Portfolio transaction completed successfully for user ID: {}", portfolioDto.getUserId());
     }
 

@@ -46,7 +46,7 @@ class FinanceManagementServiceApplicationTests {
 
 	    @Test
 	    public void testCreateBudgetService_Success() {
-	        BudgetDto budgetDto = new BudgetDto();
+	        Budget budgetDto = new Budget();
 	        budgetDto.setUserId(1);
 	        budgetDto.setAmount(BigDecimal.valueOf(1000));
 	        budgetDto.setSpentAmount(BigDecimal.valueOf(200));

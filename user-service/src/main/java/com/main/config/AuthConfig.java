@@ -28,7 +28,8 @@ public class AuthConfig {
         return http.csrf().disable()
                 .authorizeHttpRequests()
                .requestMatchers("/**").permitAll()
-                //    "/swagger-ui/**","/v3/api-docs/**").permitAll()
+               .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+//                    "/swagger-ui/**","/v3/api-docs/**").permitAll()
               //  .requestMatchers("/finguard/users").hasRole("admin") // Adjust roles as needed
                // .requestMatchers("/**").hasRole("user")
                // .anyRequest().authenticated()
